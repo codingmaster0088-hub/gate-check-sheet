@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US-Bangla Gate Checksheet App</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --secondary: #cce5ff;
+            --bg: #e6f7ff; /* LITE SKY COLOR */
+            --text: #333;
+            --border: #b3d8fd;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
+
+        /* Screens */
+        #splash-screen, #login-screen, #dashboard-screen {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Splash */
+        #splash-screen {
+            background-color: var(--primary);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            animation: fadeInOut 2s forwards;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Login */
+        #login-screen {
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; 
+            width: 100%; max-width: 400px; /* Mobile Friendly */
+        }
+        .login-box h1 { color: var(--primary); margin-bottom: 5px; font-style: italic; font-weight: 900; font-size: 1.8rem; }
+        .login-box h3 { color: gray; margin-top: 0; margin-bottom: 30px; font-size: 1rem; }
+        .input-group { text-align: left; margin-bottom: 15px; width: 100%; }
+        .input-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #004085; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px 10px; border: 1px solid var(--border); border-radius: 4px; background: #fff; font-size: 1rem;
+        }
+        button {
+            background-color: var(--primary); color: white; border: none; padding: 14px 20px;
+            border-radius: 4px; cursor: pointer; font-size: 1.1rem; width: 100%; font-weight: bold; transition: 0.2s;
+        }
+        button:hover { background-color: #004494; }
+
+        /* Dashboard */
+        #dashboard-screen { display: none; flex-direction: column; height: auto; min-height: 100vh; padding: 15px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
+        .top-bar h2 { margin: 0; font-size: 1.2rem; word-break: break-word; }
+        .top-bar button { width: auto; background: #d9534f; padding: 10px 15px; font-size: 0.9rem; }
+        
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; width: 100%; overflow: hidden; }
+        .section-title { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 10px; font-size: 1.3rem; }
+        
+        /* Grid for form inputs */
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        
+        #status-display { padding: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; color: var(--primary); margin-top: 5px; display: block; word-break: break-word; }
+        .delay-reason-box { display: none; margin-top: 10px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn-group button { flex-grow: 1; padding: 14px; font-size: 1rem; }
+        .btn-report { background-color: #28a745; }
+        .btn-report:hover { background-color: #218838; }
+
+        .table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; } /* Mobile smooth scrolling */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; background: white; min-width: 700px; }
+        table th, table td { border: 1px solid var(--border); padding: 10px 8px; text-align: left; }
+        table th { background-color: var(--secondary); color: var(--primary); }
+
+        .action-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+        .btn-edit { background-color: #f0ad4e !important; color: white; padding: 6px 10px !important; font-size: 0.8rem !important; border-radius: 3px; flex: 1; }
+        .btn-del { background-color: #d9534f !important; color: white; padding: 6px 10px !important; font-size: 0.8rem !important; border-radius: 3px; flex: 1; }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* --- MOBILE SPECIFIC FIXES --- */
+        @media (max-width: 600px) {
+            .grid-form { grid-template-columns: 1fr; } 
+            .input-group[style*="grid-column: span 2"] { grid-column: auto !important; } 
+            #dashboard-screen { padding: 10px 5px; } 
+            .top-bar { flex-direction: column; text-align: center; } 
+            .top-bar button { width: 100%; margin-top: 10px; } 
+            .login-box { padding: 25px 15px; } 
+            .section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" style="display: flex;">
+        WELCOME TO RADOAN'S APP
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>US BANGLA AIRLINES</h1>
+            <h3>GATE CHECKSHEET</h3>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>PREPARED BY</label>
+                    <input type="text" id="prep-by" required placeholder="Enter Your Name">
+                </div>
+                <div class="input-group">
+                    <label>USBA ID</label>
+                    <input type="text" id="usba-id" required placeholder="e.g. 0088 or USBA-0088">
+                </div>
+                <button type="submit">LOG IN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen">
+        <div class="top-bar">
+            <h2>Dashboard | Welcome <span id="user-display-name"></span></h2>
+            <button onclick="logOut()">LOG OUT</button>
+        </div>
+
+        <!-- Global Details -->
+        <div class="section">
+            <h3 class="section-title">General Information</h3>
+            <div class="grid-form">
+                <div class="input-group">
+                    <label>GATE TYPE</label>
+                    <select id="g-gate-type" onchange="toggleGateTypeLogic()">
+                        <option value="DOMESTIC">DOMESTIC</option>
+                        <option value="INTERNATIONAL" selected>INTERNATIONAL</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>SESSION</label>
+                    <select id="g-session">
+                        <option value="MORNING">MORNING</option>
+                        <option value="EVENING">EVENING</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>DATE</label>
+                    <input type="date" id="g-date">
+                </div>
+                <div class="input-group">
+                    <label>SUPERVISOR</label>
+                    <input type="text" id="g-supervisore">
+                </div>
+                <div class="input-group">
+                    <label>STAFF NAME(S)</label>
+                    <input type="text" id="g-staff">
+                </div>
+            </div>
+        </div>
+
+        <!-- Flight Entry Form -->
+        <div class="section">
+            <h3 class="section-title">Add / Modify Flight</h3>
+            <form id="flight-form">
+                <div class="grid-form">
+                    <div class="input-group">
+                        <label>FLIGHT NO (e.g. 321)</label>
+                        <input type="text" id="f-no" required oninput="autoFillSector()">
+                    </div>
+                    <div class="input-group">
+                        <label>SECTOR</label>
+                        <input type="text" id="f-sector" required>
+                    </div>
+                    <div class="input-group">
+                        <label>A/C REG (Optional)</label>
+                        <input type="text" id="f-acreg">
+                    </div>
+                    <div class="input-group">
+                        <label>STD (e.g. 1410)</label>
+                        <input type="text" id="f-std" required maxlength="4" pattern="\d{4}" placeholder="HHMM" oninput="calculateStatus()">
+                    </div>
+                    <div class="input-group">
+                        <!-- ATD is no longer required -->
+                        <label>ATD (e.g. 1425)</label>
+                        <input type="text" id="f-atd" maxlength="4" pattern="\d{4}" placeholder="HHMM (Optional for Initial)" oninput="calculateStatus()">
+                    </div>
+                    
+                    <!-- DOMESTIC ONLY TIMES -->
+                    <div class="input-group dom-field"><label>1ST PAX SEND</label><input type="text" id="f-firstpax" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
+                    <div class="input-group dom-field"><label>LAST PAX SEND</label><input type="text" id="f-lastpax" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
+
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label>STATUS CALCULATOR</label>
+                        <span id="status-display">Awaiting 4-Digit Time Input...</span>
+                        <div class="delay-reason-box" id="delay-box">
+                            <input type="text" id="f-delay-reason" placeholder="Enter delay reason here...">
+                        </div>
+                    </div>
+                    
+                    <!-- INTL ONLY -->
+                    <div class="input-group intl-field"><label>GATE NO</label><input type="text" id="f-gateno"></div>
+                    
+                    <div class="input-group"><label>CAPTAIN</label><input type="text" id="f-capt"></div>
+                    <div class="input-group"><label>CREW CONFIG (e.g. 2/5)</label><input type="text" id="f-crew"></div>
+                    <div class="input-group"><label>BOOK LOAD</label><input type="number" id="f-bookload"></div>
+                    <div class="input-group"><label>ACTUAL LOAD (ADULT)</label><input type="number" id="f-act-adult"></div>
+                    <div class="input-group"><label>ACTUAL LOAD (INFANT)</label><input type="number" id="f-act-infant"></div>
+                    
+                    <div class="input-group"><label>GATE NO SHOW</label><input type="number" id="f-ns" placeholder="0 or Blank = NIL"></div>
+                    
+                    <!-- INTL ONLY -->
+                    <div class="input-group intl-field"><label>IMMI OFF</label><input type="number" id="f-immi" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>SELF OFF</label><input type="number" id="f-selfoff" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>MAIL</label><input type="number" id="f-mail" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>CARGO</label><input type="text" id="f-cargo" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>LOAD CONTROL</label><input type="text" id="f-loadctrl"></div>
+                    <div class="input-group"><label>RAMP OFFICER</label><input type="text" id="f-ramp"></div>
+                    
+                    <div class="input-group"><label>MAAS</label><input type="number" id="f-maas" placeholder="0 or Blank = NIL"></div>
+                    
+                    <!-- DOMESTIC ONLY -->
+                    <div class="input-group dom-field"><label>VIP</label><input type="number" id="f-vip" placeholder="0 or Blank = NIL"></div>
+
+                    <div class="input-group"><label>WCHR/C</label><input type="number" id="f-wchr" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>CON PAX/BAG</label><input type="text" id="f-conpax" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>OBS</label><input type="number" id="f-obs" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>FOC</label><input type="number" id="f-foc" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>VEHICLE (CAR)</label><input type="text" id="f-car"></div>
+                    <div class="input-group"><label>VEHICLE (BUS)</label><input type="text" id="f-bus"></div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" id="submit-btn">ADD FLIGHT</button>
+                    <button type="button" class="btn-report" onclick="generateFinalReport()">FINAL REPORT</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Added Flights Table -->
+        <div class="section">
+            <h3 class="section-title">Added Flights Summary</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="flights-tbody">
+                        <!-- Rows auto-generate here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Sector Mapping Data ---
+        const sectorMap = {
+            'CGP': [101,103,105,107,109,111,113,115,117,119],
+            'JSR': [121,123,125,127,129],
+            'CXB': [141,143,145,147,149,151,153,155,157,159],
+            'RJH': [161,163,165,167,169],
+            'SPD': [181,183,185,187,189,191,193,195,197,199],
+            'CCU': [201,203], 'MAA': [205,207,209], 'ZYL': [531,533,535,537,539],
+            'DXB': [341,343], 'SHJ': [345,347], 'AUH': [349,351], 'JED': [361,363],
+            'RUH': [381,383], 'BKK': [217,219], 'MLE': [337,339], 'MCT': [321,323],
+            'CAN': [325,327], 'DOH': [333,335], 'KUL': [315,317,319], 'SIN': [307, 309]
+        };
+
+        let appData = {
+            user: { name: '', id: '' },
+            global: { type: 'INTERNATIONAL', session: 'MORNING', date: '', supervisor: '', staff: '' },
+            flights: []
+        };
+        
+        let editingIndex = -1;
+
+        // --- Initialization ---
+        window.onload = () => {
+            document.getElementById('g-date').valueAsDate = new Date();
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                checkLogin();
+            }, 2000);
+        };
+
+        function checkLogin() {
+            const savedData = localStorage.getItem('usba_app_data');
+            if(savedData) {
+                appData = JSON.parse(savedData);
+                if(appData.user.name) { showDashboard(); return; }
+            }
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        // --- Login Handling ---
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            appData.user.name = document.getElementById('prep-by').value;
+            appData.user.id = document.getElementById('usba-id').value;
+            saveData();
+            document.getElementById('login-screen').style.display = 'none';
+            showDashboard();
+        });
+
+        function logOut() {
+            localStorage.removeItem('usba_app_data');
+            location.reload();
+        }
+
+        function toggleGateTypeLogic() {
+            const gateType = document.getElementById('g-gate-type').value;
+            const domFields = document.querySelectorAll('.dom-field');
+            const intlFields = document.querySelectorAll('.intl-field');
+
+            if (gateType === 'DOMESTIC') {
+                domFields.forEach(el => el.style.display = 'block');
+                intlFields.forEach(el => el.style.display = 'none');
+            } else {
+                domFields.forEach(el => el.style.display = 'none');
+                intlFields.forEach(el => el.style.display = 'block');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('dashboard-screen').style.display = 'flex';
+            document.getElementById('user-display-name').innerText = appData.user.name;
+            
+            if(appData.global.date) document.getElementById('g-date').value = appData.global.date;
+            if(appData.global.type) document.getElementById('g-gate-type').value = appData.global.type;
+            if(appData.global.session) document.getElementById('g-session').value = appData.global.session;
+            if(appData.global.supervisor) document.getElementById('g-supervisore').value = appData.global.supervisor;
+            if(appData.global.staff) document.getElementById('g-staff').value = appData.global.staff;
+            
+            toggleGateTypeLogic(); 
+            renderTable();
+        }
+
+        function saveData() {
+            appData.global = {
+                type: document.getElementById('g-gate-type').value,
+                session: document.getElementById('g-session').value,
+                date: document.getElementById('g-date').value,
+                supervisor: document.getElementById('g-supervisore').value,
+                staff: document.getElementById('g-staff').value
+            };
+            localStorage.setItem('usba_app_data', JSON.stringify(appData));
+        }
+
+        // --- Form Logic ---
+        function autoFillSector() {
+            let flightInput = document.getElementById('f-no').value;
+            let numMatches = flightInput.match(/\d+/);
+            if(!numMatches) return;
+            let num = parseInt(numMatches[0]);
+            
+            for(let sector in sectorMap) {
+                if(sectorMap[sector].includes(num)) {
+                    document.getElementById('f-sector').value = sector;
+                    return;
+                }
+            }
+        }
+
+        function calculateStatus() {
+            let stdStr = document.getElementById('f-std').value;
+            let atdStr = document.getElementById('f-atd').value;
+            let display = document.getElementById('status-display');
+            let delayBox = document.getElementById('delay-box');
+            
+            if(!/^\d{4}$/.test(stdStr)) {
+                display.innerText = "Awaiting 4-Digit STD Input..."; display.style.color = "var(--primary)";
+                delayBox.style.display = "none"; return;
+            }
+            if(!/^\d{4}$/.test(atdStr)) {
+                display.innerText = "Awaiting ATD (Optional for Initial Report)"; display.style.color = "var(--primary)";
+                delayBox.style.display = "none"; return;
+            }
+
+            let stdMins = parseInt(stdStr.substring(0,2)) * 60 + parseInt(stdStr.substring(2,4));
+            let atdMins = parseInt(atdStr.substring(0,2)) * 60 + parseInt(atdStr.substring(2,4));
+            
+            let diff = atdMins - stdMins;
+
+            if(diff < -720) diff += 1440;
+            if(diff > 720) diff -= 1440;
+
+            if(diff === 0) {
+                display.innerText = "FLIGHT IS ONTIME"; display.style.color = "green";
+                delayBox.style.display = "none"; document.getElementById('f-delay-reason').value = "";
+            } else if (diff < 0) {
+                display.innerText = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`; display.style.color = "green";
+                delayBox.style.display = "none"; document.getElementById('f-delay-reason').value = "";
+            } else {
+                display.innerText = `FLIGHT ${diff} MINS DELAY DUE TO:`; display.style.color = "red";
+                delayBox.style.display = "block";
+            }
+        }
+
+        function formatNil(val) { return (!val || val === '0') ? 'NIL' : val; }
+        
+        function formatReportDate(dStr) {
+            let year, month, day;
+            if (dStr) {
+                let parts = dStr.split('-');
+                year = parts[0];
+                month = parseInt(parts[1], 10) - 1;
+                day = parts[2];
+            } else {
+                let today = new Date();
+                year = today.getFullYear();
+                month = today.getMonth();
+                day = String(today.getDate()).padStart(2, '0');
+            }
+            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            return `${day} ${months[month]} ${year}`;
+        }
+
+        // --- Add/Modify Flight Handling ---
+        document.getElementById('flight-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let fnoRaw = document.getElementById('f-no').value;
+            let fnoFinal = fnoRaw.toUpperCase().startsWith('BS') ? fnoRaw.toUpperCase() : 'BS-' + fnoRaw.toUpperCase();
+
+            let ad = document.getElementById('f-act-adult').value || "0";
+            let inf = (document.getElementById('f-act-infant').value || "0").padStart(2, '0');
+            let actLoad = `${ad}+${inf}`;
+
+            let car = document.getElementById('f-car').value;
+            let bus = document.getElementById('f-bus').value;
+            let vehicle = [];
+            if(car) vehicle.push('C-' + car);
+            if(bus) vehicle.push('B-' + bus);
+            let vehicleStr = vehicle.join(', ') || 'NIL';
+
+            let stdRaw = document.getElementById('f-std').value;
+            let atdRaw = document.getElementById('f-atd').value;
+            
+            let statusFinal = "";
+            if (atdRaw) {
+                let stdMins = parseInt(stdRaw.substring(0,2)) * 60 + parseInt(stdRaw.substring(2,4));
+                let atdMins = parseInt(atdRaw.substring(0,2)) * 60 + parseInt(atdRaw.substring(2,4));
+                let diff = atdMins - stdMins;
+                if(diff < -720) diff += 1440;
+                
+                if(diff === 0) statusFinal = "FLIGHT IS ONTIME";
+                else if(diff < 0) statusFinal = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`;
+                else statusFinal = `${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
+            }
+
+            let isDomestic = document.getElementById('g-gate-type').value === 'DOMESTIC';
+            
+            let firstpaxRaw = document.getElementById('f-firstpax').value;
+            let lastpaxRaw = document.getElementById('f-lastpax').value;
+
+            let newFlight = {
+                fno: fnoFinal,
+                sector: document.getElementById('f-sector').value.toUpperCase(),
+                acreg: document.getElementById('f-acreg').value.toUpperCase(),
+                std: stdRaw + ' LT',
+                atd: atdRaw ? atdRaw + ' LT' : '',
+                firstpax: firstpaxRaw ? firstpaxRaw + ' LT' : 'NIL',
+                lastpax: lastpaxRaw ? lastpaxRaw + ' LT' : 'NIL',
+                capt: document.getElementById('f-capt').value.toUpperCase(),
+                crew: document.getElementById('f-crew').value,
+                book: document.getElementById('f-bookload').value,
+                actual: actLoad,
+                gatens: formatNil(document.getElementById('f-ns').value),
+                immi: isDomestic ? 'NIL' : formatNil(document.getElementById('f-immi').value),
+                selfoff: formatNil(document.getElementById('f-selfoff').value),
+                mail: formatNil(document.getElementById('f-mail').value),
+                cargo: formatNil(document.getElementById('f-cargo').value),
+                gateno: isDomestic ? 'NIL' : document.getElementById('f-gateno').value.toUpperCase(),
+                loadc: document.getElementById('f-loadctrl').value.toUpperCase(),
+                ramp: document.getElementById('f-ramp').value.toUpperCase(),
+                maas: formatNil(document.getElementById('f-maas').value),
+                vip: formatNil(document.getElementById('f-vip').value),
+                wchr: formatNil(document.getElementById('f-wchr').value),
+                conpax: formatNil(document.getElementById('f-conpax').value),
+                gdmant: 'SEND',
+                obs: formatNil(document.getElementById('f-obs').value),
+                foc: formatNil(document.getElementById('f-foc').value),
+                fids: 'DONE',
+                vehicle: vehicleStr,
+                status: statusFinal
+            };
+
+            if(editingIndex > -1) {
+                appData.flights[editingIndex] = newFlight; 
+                editingIndex = -1;
+                document.getElementById('submit-btn').innerText = "ADD FLIGHT";
+            } else {
+                appData.flights.push(newFlight); 
+            }
+
+            saveData();
+            renderTable();
+            
+            document.getElementById('flight-form').reset();
+            document.getElementById('status-display').innerText = "Awaiting 4-Digit Time Input...";
+            document.getElementById('delay-box').style.display = "none";
+            document.getElementById('f-no').focus();
+        });
+
+        // --- Render, Edit, Delete ---
+        function renderTable() {
+            let tbody = document.getElementById('flights-tbody');
+            tbody.innerHTML = '';
+            appData.flights.forEach((fl, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${fl.fno}</strong></td>
+                        <td>${fl.sector}</td>
+                        <td>${fl.std}</td>
+                        <td>${fl.atd || '-'}</td>
+                        <td>${fl.status || '-'}</td>
+                        <td class="action-btns">
+                            <button type="button" class="btn-edit" onclick="editFlight(${index})">Edit</button>
+                            <button type="button" class="btn-del" onclick="deleteFlight(${index})">Del</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function editFlight(index) {
+            let fl = appData.flights[index];
+            document.getElementById('f-no').value = fl.fno.replace('BS-', '');
+            document.getElementById('f-sector').value = fl.sector;
+            document.getElementById('f-acreg').value = fl.acreg;
+            document.getElementById('f-std').value = fl.std.replace(' LT', ''); 
+            document.getElementById('f-atd').value = fl.atd ? fl.atd.replace(' LT', '') : ''; 
+            
+            document.getElementById('f-firstpax').value = fl.firstpax && fl.firstpax !== 'NIL' ? fl.firstpax.replace(' LT', '') : '';
+            document.getElementById('f-lastpax').value = fl.lastpax && fl.lastpax !== 'NIL' ? fl.lastpax.replace(' LT', '') : '';
+            
+            document.getElementById('f-gateno').value = fl.gateno === 'NIL' ? '' : fl.gateno;
+            document.getElementById('f-capt').value = fl.capt;
+            document.getElementById('f-crew').value = fl.crew;
+            document.getElementById('f-bookload').value = fl.book;
+            
+            let loadParts = fl.actual.split('+');
+            document.getElementById('f-act-adult').value = loadParts[0] || '';
+            document.getElementById('f-act-infant').value = loadParts[1] || '';
+            
+            document.getElementById('f-ns').value = fl.gatens === 'NIL' ? '' : fl.gatens;
+            document.getElementById('f-immi').value = fl.immi === 'NIL' ? '' : fl.immi;
+            document.getElementById('f-selfoff').value = fl.selfoff === 'NIL' ? '' : fl.selfoff;
+            document.getElementById('f-mail').value = fl.mail === 'NIL' ? '' : fl.mail;
+            document.getElementById('f-cargo').value = fl.cargo === 'NIL' ? '' : fl.cargo;
+            document.getElementById('f-loadctrl').value = fl.loadc;
+            document.getElementById('f-ramp').value = fl.ramp;
+            document.getElementById('f-maas').value = fl.maas === 'NIL' ? '' : fl.maas;
+            document.getElementById('f-vip').value = fl.vip === 'NIL' ? '' : fl.vip;
+            document.getElementById('f-wchr').value = fl.wchr === 'NIL' ? '' : fl.wchr;
+            document.getElementById('f-conpax').value = fl.conpax === 'NIL' ? '' : fl.conpax;
+            document.getElementById('f-obs').value = fl.obs === 'NIL' ? '' : fl.obs;
+            document.getElementById('f-foc').value = fl.foc === 'NIL' ? '' : fl.foc;
+            
+            document.getElementById('f-car').value = '';
+            document.getElementById('f-bus').value = '';
+            if(fl.vehicle !== 'NIL' && fl.vehicle !== undefined) {
+                let vParts = fl.vehicle.split(', ');
+                vParts.forEach(p => {
+                    if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
+                    if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
+                });
+            }
+
+            if(fl.status.includes('DELAY DUE TO')) {
+                document.getElementById('f-delay-reason').value = fl.status.split('DUE TO ')[1];
+            } else {
+                document.getElementById('f-delay-reason').value = '';
+            }
+
+            calculateStatus();
+            editingIndex = index;
+            document.getElementById('submit-btn').innerText = "MODIFY";
+            window.scrollTo(0, 0);
+        }
+
+        function deleteFlight(index) {
+            if(confirm("Delete this flight?")) {
+                appData.flights.splice(index, 1);
+                if(editingIndex === index) { 
+                    document.getElementById('flight-form').reset();
+                    editingIndex = -1;
+                    document.getElementById('submit-btn').innerText = "ADD FLIGHT";
+                }
+                saveData();
+                renderTable();
+            }
+        }
+
+        // --- Final Report Generation ---
+        function generateFinalReport() {
+            saveData(); 
+            
+            let formattedID = appData.user.id.toUpperCase();
+            if(!formattedID.startsWith('USBA-')) formattedID = 'USBA-' + formattedID.replace('USBA', '');
+            
+            let reportDateStr = formatReportDate(appData.global.date);
+
+            // Determine if INITIAL report (if any flight lacks ATD)
+            let isInitial = appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
+            let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
+
+            let htmlStr = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Final Report - US Bangla</title>
+                <style>
+                    body { 
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                        padding: 30px; 
+                        font-size: 12px;
+                        background-color: #e0f2fe; 
+                        -webkit-print-color-adjust: exact; 
+                        print-color-adjust: exact; 
+                    }
+                    
+                    .header-tbl, .data-tbl { 
+                        background-color: #ffffff; 
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+                    }
+
+                    .header-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; border: 2px solid #002244; font-weight: bold; }
+                    .header-tbl td { border: 1px solid #002244; padding: 6px; }
+                    
+                    .airline-title { font-family: 'Arial Black', Impact, sans-serif; font-style: italic; color: #0033a0; font-size: 26px; letter-spacing: 1.5px; margin: 5px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+                    .header-tbl h3 { margin: 2px 0; color: #0056b3; }
+                    
+                    .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; }
+                    .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 5px; text-align: center; word-wrap: break-word; }
+                    .data-tbl th.row-header { background-color: #b3d4ff; text-align: left; width: 140px; font-weight: bold; }
+                    
+                    .flight-row th, .flight-row td { background-color: #b3d4ff; font-weight: bold; color: var(--primary); }
+
+                    .status-td { text-align: center !important; vertical-align: middle; padding: 15px 5px !important; line-height: 1.3; font-weight: bold; font-size: 10px; }
+                </style>
+            </head>
+            <body>
+                <table class="header-tbl">
+                    <tr>
+                        <td colspan="2">
+                            <h2 class="airline-title">US-BANGLA AIRLINES</h2>
+                            <h3>${appData.global.type} GATE CHECKLIST (${appData.global.session})${initialSpan}</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">DATE : ${reportDateStr}</td>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">SUPERVISOR: ${appData.global.supervisor.toUpperCase()}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; padding-left: 10px;">PREPARED BY : ${appData.user.name.toUpperCase()} // ${formattedID}</td>
+                        <td style="text-align: left; padding-left: 10px;">STAFF: ${appData.global.staff.toUpperCase()}</td>
+                    </tr>
+                </table>
+
+                <table class="data-tbl">
+                    <tbody>`;
+
+            let isDom = appData.global.type === 'DOMESTIC';
+
+            let rows = [
+                { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
+                { title: 'STD', key: 'std' }, { title: 'ATD', key: 'atd' }
+            ];
+
+            if (isDom) {
+                rows.push({ title: '1ST PAX SEND', key: 'firstpax' });
+                rows.push({ title: 'LAST PAX SEND', key: 'lastpax' });
+            }
+
+            rows = rows.concat([
+                { title: 'CAPT', key: 'capt' }, { title: 'CREW CONFIG', key: 'crew' }, 
+                { title: 'BOOK LOAD', key: 'book' }, { title: 'ACTUAL LOAD', key: 'actual' },
+                { title: 'GATE NS', key: 'gatens' }
+            ]);
+
+            if (!isDom) {
+                rows.push({ title: 'IMM OFF', key: 'immi' });
+            }
+
+            rows = rows.concat([
+                { title: 'SELF OFF', key: 'selfoff' }, { title: 'MAIL', key: 'mail' },
+                { title: 'CARGO', key: 'cargo' }
+            ]);
+
+            if (!isDom) {
+                rows.push({ title: 'GATE NO', key: 'gateno' });
+            }
+
+            rows = rows.concat([
+                { title: 'LOAD CONTROL', key: 'loadc' }, { title: 'RAMP OFFICER', key: 'ramp' },
+                { title: 'MAAS', key: 'maas' }
+            ]);
+
+            if (isDom) {
+                rows.push({ title: 'VIP', key: 'vip' });
+            }
+
+            rows.push({ title: 'WCHR/WCHC', key: 'wchr' }, { title: 'CON PAX/BAG', key: 'conpax' });
+            
+            if (!isInitial) {
+                rows.push({ title: 'GD/MANT', key: 'gdmant' });
+            }
+            
+            rows.push({ title: 'OBS', key: 'obs' }, { title: 'FOC', key: 'foc' });
+            
+            if (!isInitial) {
+                rows.push({ title: 'FIDS', key: 'fids' });
+            }
+            
+            rows.push({ title: 'VEHICLE', key: 'vehicle' });
+
+            let defaultNilKeys = ['gatens', 'immi', 'selfoff', 'mail', 'cargo', 'maas', 'vip', 'wchr', 'conpax', 'obs', 'foc'];
+
+            rows.forEach(r => {
+                let trClass = r.key === 'fno' ? 'class="flight-row"' : '';
+                htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
+                appData.flights.forEach(fl => { 
+                    let val = fl[r.key];
+                    if ((val === undefined || val === '') && defaultNilKeys.includes(r.key)) val = 'NIL';
+                    htmlStr += `<td>${val || ''}</td>`; 
+                });
+                htmlStr += `</tr>`;
+            });
+
+            htmlStr += `<tr><th class="row-header">STATUS</th>`;
+            appData.flights.forEach(fl => { htmlStr += `<td class="status-td">${fl.status || ''}</td>`; });
+            htmlStr += `</tr>`;
+
+            htmlStr += `
+                    </tbody>
+                </table>
+                <script>window.print();<\/script>
+            </body>
+            </html>`;
+
+            let newWin = window.open();
+            newWin.document.open();
+            newWin.document.write(htmlStr);
+            newWin.document.close();
+        }
+    </script>
+</body>
+</html>
