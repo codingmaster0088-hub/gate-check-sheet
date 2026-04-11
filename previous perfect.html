@@ -78,7 +78,8 @@
         .grid-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
         
         #status-display { padding: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; color: var(--primary); margin-top: 5px; display: block; word-break: break-word; }
-        
+        .delay-reason-box { display: none; margin-top: 10px; }
+
         .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
         .btn-group button { flex-grow: 1; padding: 14px; font-size: 1rem; }
         .btn-report { background-color: #28a745; }
@@ -183,14 +184,12 @@
             <h3 class="section-title">Add / Modify Flight</h3>
             <form id="flight-form">
                 <div class="grid-form">
-                    
-                    <!-- SHARED FIELDS -->
                     <div class="input-group">
                         <label>FLIGHT NO (e.g. 321)</label>
                         <input type="text" id="f-no" required oninput="autoFillSector()">
                     </div>
                     <div class="input-group">
-                        <label>SECTOR / DEST</label>
+                        <label>SECTOR</label>
                         <input type="text" id="f-sector" required>
                     </div>
                     <div class="input-group">
@@ -201,69 +200,57 @@
                         <label>STD (e.g. 1410)</label>
                         <input type="text" id="f-std" required maxlength="4" pattern="\d{4}" placeholder="HHMM" oninput="calculateStatus()">
                     </div>
-
-                    <!-- ============================================== -->
-                    <!-- DOMESTIC ONLY FIELDS -->
-                    <!-- ============================================== -->
-                    <div class="input-group dom-field"><label>BOARDING START</label><input type="text" id="dom-bstart" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
-                    <div class="input-group dom-field"><label>BOARDING END</label><input type="text" id="dom-bend" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
-                    
-                    <div class="input-group dom-field">
-                        <label>STATUS</label>
-                        <select id="dom-status" onchange="handleDomStatusChange()">
-                            <option value="ONTIME">ONTIME</option>
-                            <option value="EARLY">EARLY</option>
-                            <option value="DELAY">DELAY</option>
-                        </select>
-                    </div>
-                    <div class="input-group dom-field" id="dom-early-box" style="display: none;">
-                        <label>MINS EARLY</label>
-                        <input type="number" id="dom-early-mins" placeholder="e.g. 10">
-                    </div>
-                    <div class="input-group dom-field" id="dom-delay-mins-box" style="display: none;">
-                        <label>DELAY MINS</label>
-                        <input type="number" id="dom-delay-mins" placeholder="e.g. 10">
-                    </div>
-                    <div class="input-group dom-field" id="dom-delay-box" style="display: none;">
-                        <label>DELAY REASON</label>
-                        <input type="text" id="dom-delay-reason" placeholder="e.g. PADMA">
-                    </div>
-
-                    <!-- ============================================== -->
-                    <!-- INTERNATIONAL ONLY FIELDS -->
-                    <!-- ============================================== -->
-                    <div class="input-group intl-field">
+                    <div class="input-group">
                         <label>ATD (e.g. 1425)</label>
                         <input type="text" id="f-atd" maxlength="4" pattern="\d{4}" placeholder="HHMM (Optional for Initial)" oninput="calculateStatus()">
                     </div>
-                    <div class="input-group intl-field" style="grid-column: span 2;">
+                    
+                    <!-- DOMESTIC ONLY TIMES -->
+                    <div class="input-group dom-field"><label>1ST PAX SEND</label><input type="text" id="f-firstpax" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
+                    <div class="input-group dom-field"><label>LAST PAX SEND</label><input type="text" id="f-lastpax" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
+
+                    <div class="input-group" style="grid-column: span 2;">
                         <label>STATUS CALCULATOR</label>
                         <span id="status-display">Awaiting 4-Digit Time Input...</span>
-                        <div id="delay-box" style="display: none; margin-top: 10px;">
+                        <div class="delay-reason-box" id="delay-box">
                             <input type="text" id="f-delay-reason" placeholder="Enter delay reason here...">
                         </div>
                     </div>
                     
+                    <!-- INTL ONLY -->
                     <div class="input-group intl-field"><label>GATE NO</label><input type="text" id="f-gateno"></div>
-                    <div class="input-group intl-field"><label>CAPTAIN</label><input type="text" id="f-capt"></div>
-                    <div class="input-group intl-field"><label>CREW CONFIG (e.g. 2/5)</label><input type="text" id="f-crew"></div>
-                    <div class="input-group intl-field"><label>BOOK LOAD</label><input type="number" id="f-bookload"></div>
-                    <div class="input-group intl-field"><label>ACTUAL LOAD (ADULT)</label><input type="number" id="f-act-adult"></div>
-                    <div class="input-group intl-field"><label>ACTUAL LOAD (INFANT)</label><input type="number" id="f-act-infant"></div>
-                    <div class="input-group intl-field"><label>GATE NO SHOW</label><input type="number" id="f-ns" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>CAPTAIN</label><input type="text" id="f-capt"></div>
+                    <div class="input-group"><label>CREW CONFIG (e.g. 2/5)</label><input type="text" id="f-crew"></div>
+                    <div class="input-group"><label>BOOK LOAD</label><input type="number" id="f-bookload"></div>
+                    <div class="input-group"><label>ACTUAL LOAD (ADULT)</label><input type="number" id="f-act-adult"></div>
+                    <div class="input-group"><label>ACTUAL LOAD (INFANT)</label><input type="number" id="f-act-infant"></div>
+                    
+                    <div class="input-group"><label>GATE NO SHOW</label><input type="number" id="f-ns" placeholder="0 or Blank = NIL"></div>
+                    
+                    <!-- INTL ONLY -->
                     <div class="input-group intl-field"><label>IMMI OFF</label><input type="number" id="f-immi" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>SELF OFF</label><input type="number" id="f-selfoff" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>MAIL</label><input type="number" id="f-mail" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>CARGO</label><input type="text" id="f-cargo" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>LOAD CONTROL</label><input type="text" id="f-loadctrl"></div>
-                    <div class="input-group intl-field"><label>RAMP OFFICER</label><input type="text" id="f-ramp"></div>
-                    <div class="input-group intl-field"><label>MAAS</label><input type="number" id="f-maas" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>WCHR/C</label><input type="number" id="f-wchr" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>CON PAX/BAG</label><input type="text" id="f-conpax" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>OBS</label><input type="number" id="f-obs" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>FOC</label><input type="number" id="f-foc" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>VEHICLE (CAR)</label><input type="text" id="f-car"></div>
-                    <div class="input-group intl-field"><label>VEHICLE (BUS)</label><input type="text" id="f-bus"></div>
+                    
+                    <div class="input-group"><label>SELF OFF</label><input type="number" id="f-selfoff" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>MAIL</label><input type="number" id="f-mail" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>CARGO</label><input type="text" id="f-cargo" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>LOAD CONTROL</label><input type="text" id="f-loadctrl"></div>
+                    <div class="input-group"><label>RAMP OFFICER</label><input type="text" id="f-ramp"></div>
+                    
+                    <div class="input-group"><label>MAAS</label><input type="number" id="f-maas" placeholder="0 or Blank = NIL"></div>
+                    
+                    <!-- DOMESTIC ONLY -->
+                    <div class="input-group dom-field"><label>VIP</label><input type="number" id="f-vip" placeholder="0 or Blank = NIL"></div>
+
+                    <div class="input-group"><label>WCHR/C</label><input type="number" id="f-wchr" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>CON PAX/BAG</label><input type="text" id="f-conpax" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>OBS</label><input type="number" id="f-obs" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group"><label>FOC</label><input type="number" id="f-foc" placeholder="0 or Blank = NIL"></div>
+                    
+                    <div class="input-group"><label>VEHICLE (CAR)</label><input type="text" id="f-car"></div>
+                    <div class="input-group"><label>VEHICLE (BUS)</label><input type="text" id="f-bus"></div>
                 </div>
                 
                 <div class="btn-group">
@@ -279,7 +266,7 @@
             <div class="table-responsive">
                 <table>
                     <thead>
-                        <tr id="summary-table-headers">
+                        <tr>
                             <th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>
                         </tr>
                     </thead>
@@ -350,25 +337,14 @@
             const gateType = document.getElementById('g-gate-type').value;
             const domFields = document.querySelectorAll('.dom-field');
             const intlFields = document.querySelectorAll('.intl-field');
-            const summaryHeaders = document.getElementById('summary-table-headers');
 
             if (gateType === 'DOMESTIC') {
                 domFields.forEach(el => el.style.display = 'block');
                 intlFields.forEach(el => el.style.display = 'none');
-                summaryHeaders.innerHTML = `<th>FLIGHT</th><th>DEST</th><th>STD</th><th>BOARDING END</th><th>STATUS</th><th>ACTIONS</th>`;
-                handleDomStatusChange(); // Ensure correct boxes show based on default
             } else {
                 domFields.forEach(el => el.style.display = 'none');
                 intlFields.forEach(el => el.style.display = 'block');
-                summaryHeaders.innerHTML = `<th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>`;
             }
-        }
-
-        function handleDomStatusChange() {
-            const status = document.getElementById('dom-status').value;
-            document.getElementById('dom-early-box').style.display = status === 'EARLY' ? 'block' : 'none';
-            document.getElementById('dom-delay-mins-box').style.display = status === 'DELAY' ? 'block' : 'none';
-            document.getElementById('dom-delay-box').style.display = status === 'DELAY' ? 'block' : 'none';
         }
 
         function showDashboard() {
@@ -469,108 +445,71 @@
         document.getElementById('flight-form').addEventListener('submit', (e) => {
             e.preventDefault();
             
-            let isDomestic = document.getElementById('g-gate-type').value === 'DOMESTIC';
             let fnoRaw = document.getElementById('f-no').value;
             let fnoFinal = fnoRaw.toUpperCase().startsWith('BS') ? fnoRaw.toUpperCase() : 'BS-' + fnoRaw.toUpperCase();
+
+            let ad = document.getElementById('f-act-adult').value || "0";
+            let inf = (document.getElementById('f-act-infant').value || "0").padStart(2, '0');
+            let actLoad = `${ad}+${inf}`;
+
+            let car = document.getElementById('f-car').value;
+            let bus = document.getElementById('f-bus').value;
+            let vehicle = [];
+            if(car) vehicle.push('C-' + car);
+            if(bus) vehicle.push('B-' + bus);
+            let vehicleStr = vehicle.join(', ') || 'NIL';
+
             let stdRaw = document.getElementById('f-std').value;
+            let atdRaw = document.getElementById('f-atd').value;
             
-            let newFlight = {};
-
-            if (isDomestic) {
-                // Strict Mandatory Checks for Domestic
-                if (!document.getElementById('f-acreg').value.trim()) { alert("A/C REG is mandatory for Domestic."); return; }
-                if (!document.getElementById('dom-bstart').value.trim()) { alert("BOARDING START is mandatory."); return; }
-                if (!document.getElementById('dom-bend').value.trim()) { alert("BOARDING END is mandatory."); return; }
+            let statusFinal = "";
+            if (atdRaw) {
+                let stdMins = parseInt(stdRaw.substring(0,2)) * 60 + parseInt(stdRaw.substring(2,4));
+                let atdMins = parseInt(atdRaw.substring(0,2)) * 60 + parseInt(atdRaw.substring(2,4));
+                let diff = atdMins - stdMins;
+                if(diff < -720) diff += 1440;
                 
-                let domStatusDrop = document.getElementById('dom-status').value;
-                if (domStatusDrop === 'EARLY' && !document.getElementById('dom-early-mins').value.trim()) { alert("MINS EARLY is mandatory."); return; }
-                if (domStatusDrop === 'DELAY') {
-                    if (!document.getElementById('dom-delay-mins').value.trim()) { alert("DELAY MINS is mandatory."); return; }
-                    if (!document.getElementById('dom-delay-reason').value.trim()) { alert("DELAY REASON is mandatory."); return; }
-                }
-
-                let bStartRaw = document.getElementById('dom-bstart').value;
-                let bEndRaw = document.getElementById('dom-bend').value;
-                let domFinalStatusStr = "";
-                
-                if (domStatusDrop === 'ONTIME') {
-                    domFinalStatusStr = "FLIGHT ONTIME";
-                } else if (domStatusDrop === 'EARLY') {
-                    let mins = document.getElementById('dom-early-mins').value;
-                    domFinalStatusStr = `FLIGHT ${mins} MINS EARLY`;
-                } else if (domStatusDrop === 'DELAY') {
-                    let dMins = document.getElementById('dom-delay-mins').value;
-                    let reason = document.getElementById('dom-delay-reason').value;
-                    domFinalStatusStr = `FLIGHT ${dMins} MINS DELAY DUE TO ${reason.toUpperCase()}`; 
-                }
-
-                newFlight = {
-                    fno: fnoFinal,
-                    sector: document.getElementById('f-sector').value.toUpperCase(),
-                    acreg: document.getElementById('f-acreg').value.toUpperCase(),
-                    std: stdRaw + ' LT',
-                    bstart: bStartRaw ? bStartRaw + ' LT' : '',
-                    bend: bEndRaw ? bEndRaw + ' LT' : '',
-                    status: domFinalStatusStr,
-                    domStatusType: domStatusDrop 
-                };
-
-            } else {
-                // INTERNATIONAL LOGIC
-                let ad = document.getElementById('f-act-adult').value || "0";
-                let inf = (document.getElementById('f-act-infant').value || "0").padStart(2, '0');
-                let actLoad = `${ad}+${inf}`;
-
-                let car = document.getElementById('f-car').value;
-                let bus = document.getElementById('f-bus').value;
-                let vehicle = [];
-                if(car) vehicle.push('C-' + car);
-                if(bus) vehicle.push('B-' + bus);
-                let vehicleStr = vehicle.join(', ') || 'NIL';
-
-                let atdRaw = document.getElementById('f-atd').value;
-                let intlStatusFinal = "";
-                
-                if (atdRaw) {
-                    let stdMins = parseInt(stdRaw.substring(0,2)) * 60 + parseInt(stdRaw.substring(2,4));
-                    let atdMins = parseInt(atdRaw.substring(0,2)) * 60 + parseInt(atdRaw.substring(2,4));
-                    let diff = atdMins - stdMins;
-                    if(diff < -720) diff += 1440;
-                    
-                    if(diff === 0) intlStatusFinal = "FLIGHT IS ONTIME";
-                    else if(diff < 0) intlStatusFinal = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`;
-                    else intlStatusFinal = `${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
-                }
-
-                newFlight = {
-                    fno: fnoFinal,
-                    sector: document.getElementById('f-sector').value.toUpperCase(),
-                    acreg: document.getElementById('f-acreg').value.toUpperCase(),
-                    std: stdRaw + ' LT',
-                    atd: atdRaw ? atdRaw + ' LT' : '',
-                    capt: document.getElementById('f-capt').value.toUpperCase(),
-                    crew: document.getElementById('f-crew').value,
-                    book: document.getElementById('f-bookload').value,
-                    actual: actLoad,
-                    gatens: formatNil(document.getElementById('f-ns').value),
-                    immi: formatNil(document.getElementById('f-immi').value),
-                    selfoff: formatNil(document.getElementById('f-selfoff').value),
-                    mail: formatNil(document.getElementById('f-mail').value),
-                    cargo: formatNil(document.getElementById('f-cargo').value),
-                    gateno: document.getElementById('f-gateno').value.toUpperCase(),
-                    loadc: document.getElementById('f-loadctrl').value.toUpperCase(),
-                    ramp: document.getElementById('f-ramp').value.toUpperCase(),
-                    maas: formatNil(document.getElementById('f-maas').value),
-                    wchr: formatNil(document.getElementById('f-wchr').value),
-                    conpax: formatNil(document.getElementById('f-conpax').value),
-                    gdmant: 'SEND',
-                    obs: formatNil(document.getElementById('f-obs').value),
-                    foc: formatNil(document.getElementById('f-foc').value),
-                    fids: 'DONE',
-                    vehicle: vehicleStr,
-                    status: intlStatusFinal
-                };
+                if(diff === 0) statusFinal = "FLIGHT IS ONTIME";
+                else if(diff < 0) statusFinal = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`;
+                else statusFinal = `${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
             }
+
+            let isDomestic = document.getElementById('g-gate-type').value === 'DOMESTIC';
+            
+            let firstpaxRaw = document.getElementById('f-firstpax').value;
+            let lastpaxRaw = document.getElementById('f-lastpax').value;
+
+            let newFlight = {
+                fno: fnoFinal,
+                sector: document.getElementById('f-sector').value.toUpperCase(),
+                acreg: document.getElementById('f-acreg').value.toUpperCase(),
+                std: stdRaw + ' LT',
+                atd: atdRaw ? atdRaw + ' LT' : '',
+                firstpax: firstpaxRaw ? firstpaxRaw + ' LT' : 'NIL',
+                lastpax: lastpaxRaw ? lastpaxRaw + ' LT' : 'NIL',
+                capt: document.getElementById('f-capt').value.toUpperCase(),
+                crew: document.getElementById('f-crew').value,
+                book: document.getElementById('f-bookload').value,
+                actual: actLoad,
+                gatens: formatNil(document.getElementById('f-ns').value),
+                immi: isDomestic ? 'NIL' : formatNil(document.getElementById('f-immi').value),
+                selfoff: formatNil(document.getElementById('f-selfoff').value),
+                mail: formatNil(document.getElementById('f-mail').value),
+                cargo: formatNil(document.getElementById('f-cargo').value),
+                gateno: isDomestic ? 'NIL' : document.getElementById('f-gateno').value.toUpperCase(),
+                loadc: document.getElementById('f-loadctrl').value.toUpperCase(),
+                ramp: document.getElementById('f-ramp').value.toUpperCase(),
+                maas: formatNil(document.getElementById('f-maas').value),
+                vip: formatNil(document.getElementById('f-vip').value),
+                wchr: formatNil(document.getElementById('f-wchr').value),
+                conpax: formatNil(document.getElementById('f-conpax').value),
+                gdmant: 'SEND',
+                obs: formatNil(document.getElementById('f-obs').value),
+                foc: formatNil(document.getElementById('f-foc').value),
+                fids: 'DONE',
+                vehicle: vehicleStr,
+                status: statusFinal
+            };
 
             if(editingIndex > -1) {
                 appData.flights[editingIndex] = newFlight; 
@@ -587,23 +526,19 @@
             document.getElementById('status-display').innerText = "Awaiting 4-Digit Time Input...";
             document.getElementById('delay-box').style.display = "none";
             document.getElementById('f-no').focus();
-            toggleGateTypeLogic(); 
         });
 
         // --- Render, Edit, Delete ---
         function renderTable() {
             let tbody = document.getElementById('flights-tbody');
             tbody.innerHTML = '';
-            let isDom = appData.global.type === 'DOMESTIC';
-
             appData.flights.forEach((fl, index) => {
-                let timeColumn = isDom ? (fl.bend || '-') : (fl.atd || '-');
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${fl.fno}</strong></td>
                         <td>${fl.sector}</td>
                         <td>${fl.std}</td>
-                        <td>${timeColumn}</td>
+                        <td>${fl.atd || '-'}</td>
                         <td>${fl.status || '-'}</td>
                         <td class="action-btns">
                             <button type="button" class="btn-edit" onclick="editFlight(${index})">Edit</button>
@@ -616,74 +551,55 @@
 
         function editFlight(index) {
             let fl = appData.flights[index];
-            let isDom = appData.global.type === 'DOMESTIC';
-
             document.getElementById('f-no').value = fl.fno.replace('BS-', '');
             document.getElementById('f-sector').value = fl.sector;
-            document.getElementById('f-acreg').value = fl.acreg || '';
+            document.getElementById('f-acreg').value = fl.acreg;
             document.getElementById('f-std').value = fl.std.replace(' LT', ''); 
-
-            if (isDom) {
-                document.getElementById('dom-bstart').value = fl.bstart ? fl.bstart.replace(' LT', '') : '';
-                document.getElementById('dom-bend').value = fl.bend ? fl.bend.replace(' LT', '') : '';
-                
-                if (fl.domStatusType) {
-                    document.getElementById('dom-status').value = fl.domStatusType;
-                    if (fl.domStatusType === 'EARLY') {
-                        let match = fl.status.match(/\d+/);
-                        document.getElementById('dom-early-mins').value = match ? match[0] : '';
-                    } else if (fl.domStatusType === 'DELAY') {
-                        let match = fl.status.match(/\d+/);
-                        document.getElementById('dom-delay-mins').value = match ? match[0] : '';
-                        let reasonPart = fl.status.split('DUE TO ')[1];
-                        document.getElementById('dom-delay-reason').value = reasonPart ? reasonPart : '';
-                    }
-                }
-                handleDomStatusChange();
-            } else {
-                document.getElementById('f-atd').value = fl.atd ? fl.atd.replace(' LT', '') : ''; 
-                document.getElementById('f-gateno').value = fl.gateno === 'NIL' ? '' : (fl.gateno || '');
-                document.getElementById('f-capt').value = fl.capt || '';
-                document.getElementById('f-crew').value = fl.crew || '';
-                document.getElementById('f-bookload').value = fl.book || '';
-                
-                let loadParts = (fl.actual || '').split('+');
-                document.getElementById('f-act-adult').value = loadParts[0] || '';
-                document.getElementById('f-act-infant').value = loadParts[1] || '';
-                
-                document.getElementById('f-ns').value = fl.gatens === 'NIL' ? '' : fl.gatens;
-                document.getElementById('f-immi').value = fl.immi === 'NIL' ? '' : fl.immi;
-                document.getElementById('f-selfoff').value = fl.selfoff === 'NIL' ? '' : fl.selfoff;
-                document.getElementById('f-mail').value = fl.mail === 'NIL' ? '' : fl.mail;
-                document.getElementById('f-cargo').value = fl.cargo === 'NIL' ? '' : fl.cargo;
-                document.getElementById('f-loadctrl').value = fl.loadc || '';
-                document.getElementById('f-ramp').value = fl.ramp || '';
-                document.getElementById('f-maas').value = fl.maas === 'NIL' ? '' : fl.maas;
-                document.getElementById('f-vip').value = fl.vip === 'NIL' ? '' : fl.vip;
-                document.getElementById('f-wchr').value = fl.wchr === 'NIL' ? '' : fl.wchr;
-                document.getElementById('f-conpax').value = fl.conpax === 'NIL' ? '' : fl.conpax;
-                document.getElementById('f-obs').value = fl.obs === 'NIL' ? '' : fl.obs;
-                document.getElementById('f-foc').value = fl.foc === 'NIL' ? '' : fl.foc;
-                
-                document.getElementById('f-car').value = '';
-                document.getElementById('f-bus').value = '';
-                if(fl.vehicle && fl.vehicle !== 'NIL') {
-                    let vParts = fl.vehicle.split(', ');
-                    vParts.forEach(p => {
-                        if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
-                        if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
-                    });
-                }
-
-                if(fl.status && fl.status.includes('DELAY DUE TO')) {
-                    document.getElementById('f-delay-reason').value = fl.status.split('DUE TO ')[1];
-                } else {
-                    document.getElementById('f-delay-reason').value = '';
-                }
-
-                calculateStatus();
+            document.getElementById('f-atd').value = fl.atd ? fl.atd.replace(' LT', '') : ''; 
+            
+            document.getElementById('f-firstpax').value = fl.firstpax && fl.firstpax !== 'NIL' ? fl.firstpax.replace(' LT', '') : '';
+            document.getElementById('f-lastpax').value = fl.lastpax && fl.lastpax !== 'NIL' ? fl.lastpax.replace(' LT', '') : '';
+            
+            document.getElementById('f-gateno').value = fl.gateno === 'NIL' ? '' : fl.gateno;
+            document.getElementById('f-capt').value = fl.capt;
+            document.getElementById('f-crew').value = fl.crew;
+            document.getElementById('f-bookload').value = fl.book;
+            
+            let loadParts = fl.actual.split('+');
+            document.getElementById('f-act-adult').value = loadParts[0] || '';
+            document.getElementById('f-act-infant').value = loadParts[1] || '';
+            
+            document.getElementById('f-ns').value = fl.gatens === 'NIL' ? '' : fl.gatens;
+            document.getElementById('f-immi').value = fl.immi === 'NIL' ? '' : fl.immi;
+            document.getElementById('f-selfoff').value = fl.selfoff === 'NIL' ? '' : fl.selfoff;
+            document.getElementById('f-mail').value = fl.mail === 'NIL' ? '' : fl.mail;
+            document.getElementById('f-cargo').value = fl.cargo === 'NIL' ? '' : fl.cargo;
+            document.getElementById('f-loadctrl').value = fl.loadc;
+            document.getElementById('f-ramp').value = fl.ramp;
+            document.getElementById('f-maas').value = fl.maas === 'NIL' ? '' : fl.maas;
+            document.getElementById('f-vip').value = fl.vip === 'NIL' ? '' : fl.vip;
+            document.getElementById('f-wchr').value = fl.wchr === 'NIL' ? '' : fl.wchr;
+            document.getElementById('f-conpax').value = fl.conpax === 'NIL' ? '' : fl.conpax;
+            document.getElementById('f-obs').value = fl.obs === 'NIL' ? '' : fl.obs;
+            document.getElementById('f-foc').value = fl.foc === 'NIL' ? '' : fl.foc;
+            
+            document.getElementById('f-car').value = '';
+            document.getElementById('f-bus').value = '';
+            if(fl.vehicle !== 'NIL' && fl.vehicle !== undefined) {
+                let vParts = fl.vehicle.split(', ');
+                vParts.forEach(p => {
+                    if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
+                    if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
+                });
             }
 
+            if(fl.status && fl.status.includes('DELAY DUE TO')) {
+                document.getElementById('f-delay-reason').value = fl.status.split('DUE TO ')[1];
+            } else {
+                document.getElementById('f-delay-reason').value = '';
+            }
+
+            calculateStatus();
             editingIndex = index;
             document.getElementById('submit-btn').innerText = "MODIFY";
             window.scrollTo(0, 0);
@@ -696,7 +612,6 @@
                     document.getElementById('flight-form').reset();
                     editingIndex = -1;
                     document.getElementById('submit-btn').innerText = "ADD FLIGHT";
-                    toggleGateTypeLogic();
                 }
                 saveData();
                 renderTable();
@@ -717,175 +632,137 @@
             
             let reportDateStr = formatReportDate(appData.global.date);
 
-            // INITIAL Logic only applies to International (missing ATD)
-            let isDom = appData.global.type === 'DOMESTIC';
-            let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
+            let isInitial = appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
             let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
 
-            // Create off-screen container for the JPG rendering (Landscape width)
+            // Create off-screen container for the JPG rendering
             let reportDiv = document.createElement('div');
             reportDiv.id = 'report-export-container';
             reportDiv.style.position = 'absolute';
             reportDiv.style.top = '-9999px'; 
             reportDiv.style.left = '0';
-            reportDiv.style.width = '1400px'; /* LANDSCAPE SIZE FOR MORE STATUS ROOM */
-            reportDiv.style.backgroundColor = '#e0f2fe'; 
+            reportDiv.style.width = '1000px'; /* Narrower container makes fields tighter */
+            reportDiv.style.backgroundColor = '#e0f2fe'; /* Lite sky blue background */
             reportDiv.style.padding = '30px';
             reportDiv.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
             reportDiv.style.color = '#333';
 
             let htmlStr = `
                 <style>
-                    .export-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; border: 2px solid #002244; font-weight: bold; font-size: 18px; background: white; }
-                    .export-tbl td, .export-tbl th { border: 1px solid #002244; padding: 10px; }
-                    .airline-title { font-family: 'Arial Black', Impact, sans-serif; font-style: italic; color: #0033a0; font-size: 38px; letter-spacing: 1.5px; margin: 5px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 24px; }
+                    .export-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; border: 2px solid #002244; font-weight: bold; font-size: 14px; background: white; }
+                    .export-tbl td, .export-tbl th { border: 1px solid #002244; padding: 8px; }
+                    .airline-title { font-family: 'Arial Black', Impact, sans-serif; font-style: italic; color: #0033a0; font-size: 30px; letter-spacing: 1.5px; margin: 5px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 18px; }
                     
-                    .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; font-size: 16px; background: white; }
-                    .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 8px; text-align: center; word-wrap: break-word; }
-                    .row-header { background-color: #b3d4ff; text-align: left; width: 140px; font-weight: bold; }
+                    .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; font-size: 14px; background: white; }
+                    .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 7px; text-align: center; word-wrap: break-word; }
+                    .row-header { background-color: #b3d4ff; text-align: left; width: 130px; font-weight: bold; }
                     
                     .flight-row th, .flight-row td { background-color: #b3d4ff; font-weight: bold; color: var(--primary); }
-                    .status-td { text-align: center !important; vertical-align: middle; padding: 15px 5px !important; line-height: 1.3; font-weight: bold; font-size: 14px; }
+
+                    .status-td { text-align: center !important; vertical-align: middle; padding: 15px 5px !important; line-height: 1.3; font-weight: bold; font-size: 12px; }
                     
                     /* Custom background colors */
                     .bg-header-blue { background-color: #b3d4ff !important; }
                     .bg-light-yellow { background-color: #fff9c4 !important; }
-                    
-                    /* FIXED RED WITH ADJUSTABLE WHITE FONT */
-                    .status-delay { background-color: #ff0000 !important; color: #ffffff !important; } 
-                    
-                    /* DARK YELLOW FOR EARLY */
-                    .status-early { background-color: #ffb300 !important; color: #000000 !important; } 
-                    
-                    .status-ontime { background-color: #a5d6a7 !important; color: #000000 !important;} /* Green */
-                    
-                    /* DOMESTIC LANDSCAPE SPECIFIC CSS */
-                    .dom-table { font-size: 18px; } /* Increased Text Size */
-                    .dom-table th { background-color: #ffffff; color: #000; font-weight: bold; text-align: center; }
-                    .col-sl { width: 4%; }
-                    .col-flight { width: 8%; }
-                    .col-dest { width: 6%; }
-                    .col-acreg { width: 7%; }
-                    .col-std { width: 7%; }
-                    .col-bstart { width: 14%; white-space: nowrap; }
-                    .col-bend { width: 14%; white-space: nowrap; }
-                    .col-status { width: 40%; text-align: left !important; padding-left: 15px !important; }
+                    .status-delay { background-color: #ffcdd2 !important; } /* Lite Red */
+                    .status-early { background-color: #fff59d !important; } /* Yellow */
+                    .status-ontime { background-color: #a5d6a7 !important; } /* Green */
                 </style>
                 
                 <table class="export-tbl">
                     <tr>
-                        <td colspan="2" class="bg-header-blue" style="text-align: center; vertical-align: middle;">
+                        <td colspan="2" class="bg-header-blue" style="text-align: center;">
                             <h2 class="airline-title">US-BANGLA AIRLINES</h2>
                             <h3>${appData.global.type} GATE CHECKLIST (${appData.global.session})${initialSpan}</h3>
                         </td>
                     </tr>
                     <tr class="bg-light-yellow">
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">DATE : ${reportDateStr}</td>
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">SUPERVISOR: ${appData.global.supervisor.toUpperCase()}</td>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">DATE : ${reportDateStr}</td>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">SUPERVISOR: ${appData.global.supervisor.toUpperCase()}</td>
                     </tr>
                     <tr class="bg-light-yellow">
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">PREPARED BY : ${appData.user.name.toUpperCase()} // ${formattedID}</td>
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">STAFF: ${appData.global.staff.toUpperCase()}</td>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">PREPARED BY : ${appData.user.name.toUpperCase()} // ${formattedID}</td>
+                        <td style="width: 50%; text-align: left; padding-left: 10px;">STAFF: ${appData.global.staff.toUpperCase()}</td>
                     </tr>
-                </table>`;
+                </table>
+
+                <table class="data-tbl">
+                    <tbody>`;
+
+            let isDom = appData.global.type === 'DOMESTIC';
+
+            let rows = [
+                { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
+                { title: 'STD', key: 'std' }, { title: 'ATD', key: 'atd' }
+            ];
 
             if (isDom) {
-                // DOMESTIC ROW-BASED TABLE (LANDSCAPE)
-                htmlStr += `
-                <table class="data-tbl dom-table">
-                    <thead>
-                        <tr>
-                            <th class="col-sl">S/L NO</th>
-                            <th class="col-flight">FLIGHT NO</th>
-                            <th class="col-dest">DEST</th>
-                            <th class="col-acreg">A/C REG</th>
-                            <th class="col-std">STD</th>
-                            <th class="col-bstart">BOARDING START</th>
-                            <th class="col-bend">BOARDING END</th>
-                            <th class="col-status" style="text-align: center !important;">STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                
-                appData.flights.forEach((fl, i) => {
-                    let slNo = String(i + 1).padStart(2, '0');
-                    let statusBgClass = '';
-                    let statusUpper = (fl.status || '').toUpperCase();
-                    
-                    if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'status-early';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'status-ontime';
-
-                    htmlStr += `
-                        <tr>
-                            <td>${slNo}</td>
-                            <td>${fl.fno}</td>
-                            <td>${fl.sector}</td>
-                            <td>${fl.acreg || ''}</td>
-                            <td>${fl.std}</td>
-                            <td>${fl.bstart || ''}</td>
-                            <td>${fl.bend || ''}</td>
-                            <td class="${statusBgClass} col-status">${fl.status || ''}</td>
-                        </tr>
-                    `;
-                });
-                htmlStr += `</tbody></table>`;
-
-            } else {
-                // INTERNATIONAL COLUMN-BASED TABLE
-                htmlStr += `<table class="data-tbl"><tbody>`;
-                let rows = [
-                    { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
-                    { title: 'STD', key: 'std' }, { title: 'ATD', key: 'atd' },
-                    { title: 'CAPT', key: 'capt' }, { title: 'CREW CONFIG', key: 'crew' }, 
-                    { title: 'BOOK LOAD', key: 'book' }, { title: 'ACTUAL LOAD', key: 'actual' },
-                    { title: 'GATE NS', key: 'gatens' }, { title: 'IMM OFF', key: 'immi' },
-                    { title: 'SELF OFF', key: 'selfoff' }, { title: 'MAIL', key: 'mail' }, { title: 'CARGO', key: 'cargo' },
-                    { title: 'GATE NO', key: 'gateno' }, { title: 'LOAD CONTROL', key: 'loadc' }, { title: 'RAMP OFFICER', key: 'ramp' }, 
-                    { title: 'MAAS', key: 'maas' }, { title: 'WCHR/WCHC', key: 'wchr' }, { title: 'CON PAX/BAG', key: 'conpax' }
-                ];
-
-                if (!isInitial) rows.push({ title: 'GD/MANT', key: 'gdmant' });
-                rows.push({ title: 'OBS', key: 'obs' }, { title: 'FOC', key: 'foc' });
-                if (!isInitial) rows.push({ title: 'FIDS', key: 'fids' });
-                rows.push({ title: 'VEHICLE', key: 'vehicle' });
-
-                let defaultNilKeys = ['gatens', 'immi', 'selfoff', 'mail', 'cargo', 'maas', 'wchr', 'conpax', 'obs', 'foc'];
-
-                rows.forEach(r => {
-                    let trClass = r.key === 'fno' ? 'class="flight-row"' : '';
-                    htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
-                    appData.flights.forEach(fl => { 
-                        let val = fl[r.key];
-                        if ((val === undefined || val === '') && defaultNilKeys.includes(r.key)) val = 'NIL';
-                        htmlStr += `<td>${val || ''}</td>`; 
-                    });
-                    htmlStr += `</tr>`;
-                });
-
-                // Status Row Colors for Intl
-                htmlStr += `<tr><th class="row-header">STATUS</th>`;
-                appData.flights.forEach(fl => { 
-                    let statusBgClass = '';
-                    let statusUpper = (fl.status || '').toUpperCase();
-                    
-                    if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'status-early';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'status-ontime';
-
-                    htmlStr += `<td class="status-td ${statusBgClass}">${fl.status || ''}</td>`; 
-                });
-                htmlStr += `</tr></tbody></table>`;
+                rows.push({ title: '1ST PAX SEND', key: 'firstpax' }, { title: 'LAST PAX SEND', key: 'lastpax' });
             }
+
+            rows = rows.concat([
+                { title: 'CAPT', key: 'capt' }, { title: 'CREW CONFIG', key: 'crew' }, 
+                { title: 'BOOK LOAD', key: 'book' }, { title: 'ACTUAL LOAD', key: 'actual' },
+                { title: 'GATE NS', key: 'gatens' }
+            ]);
+
+            if (!isDom) rows.push({ title: 'IMM OFF', key: 'immi' });
+
+            rows = rows.concat([
+                { title: 'SELF OFF', key: 'selfoff' }, { title: 'MAIL', key: 'mail' }, { title: 'CARGO', key: 'cargo' }
+            ]);
+
+            if (!isDom) rows.push({ title: 'GATE NO', key: 'gateno' });
+
+            rows = rows.concat([
+                { title: 'LOAD CONTROL', key: 'loadc' }, { title: 'RAMP OFFICER', key: 'ramp' }, { title: 'MAAS', key: 'maas' }
+            ]);
+
+            if (isDom) rows.push({ title: 'VIP', key: 'vip' });
+
+            rows.push({ title: 'WCHR/WCHC', key: 'wchr' }, { title: 'CON PAX/BAG', key: 'conpax' });
+            if (!isInitial) rows.push({ title: 'GD/MANT', key: 'gdmant' });
+            rows.push({ title: 'OBS', key: 'obs' }, { title: 'FOC', key: 'foc' });
+            if (!isInitial) rows.push({ title: 'FIDS', key: 'fids' });
+            rows.push({ title: 'VEHICLE', key: 'vehicle' });
+
+            let defaultNilKeys = ['gatens', 'immi', 'selfoff', 'mail', 'cargo', 'maas', 'vip', 'wchr', 'conpax', 'obs', 'foc'];
+
+            rows.forEach(r => {
+                let trClass = r.key === 'fno' ? 'class="flight-row"' : '';
+                htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
+                appData.flights.forEach(fl => { 
+                    let val = fl[r.key];
+                    if ((val === undefined || val === '') && defaultNilKeys.includes(r.key)) val = 'NIL';
+                    htmlStr += `<td>${val || ''}</td>`; 
+                });
+                htmlStr += `</tr>`;
+            });
+
+            // Handle Status Box Colors
+            htmlStr += `<tr><th class="row-header">STATUS</th>`;
+            appData.flights.forEach(fl => { 
+                let statusBgClass = '';
+                let statusUpper = (fl.status || '').toUpperCase();
+                
+                if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
+                else if (statusUpper.includes('EARLY')) statusBgClass = 'status-early';
+                else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'status-ontime';
+
+                htmlStr += `<td class="status-td ${statusBgClass}">${fl.status || ''}</td>`; 
+            });
+            htmlStr += `</tr>`;
+
+            htmlStr += `</tbody></table>`;
 
             reportDiv.innerHTML = htmlStr;
             document.body.appendChild(reportDiv);
 
             // Execute html2canvas to convert DOM to JPG
             html2canvas(reportDiv, { 
-                scale: 2, 
-                backgroundColor: '#e0f2fe' 
+                scale: 2, // High resolution
+                backgroundColor: '#e0f2fe' // Ensure background color is captured
             }).then(canvas => {
                 let imgData = canvas.toDataURL('image/jpeg', 0.95);
                 let link = document.createElement('a');
@@ -893,6 +770,7 @@
                 link.href = imgData;
                 link.click();
 
+                // Cleanup
                 document.body.removeChild(reportDiv);
                 btn.innerText = originalText;
                 btn.disabled = false;
