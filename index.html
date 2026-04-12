@@ -722,13 +722,16 @@
             let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
             let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
 
-            // Create off-screen container for the JPG rendering (Landscape width)
+            // Create off-screen container for the JPG rendering
             let reportDiv = document.createElement('div');
             reportDiv.id = 'report-export-container';
             reportDiv.style.position = 'absolute';
             reportDiv.style.top = '-9999px'; 
             reportDiv.style.left = '0';
-            reportDiv.style.width = '1400px'; /* LANDSCAPE SIZE FOR MORE STATUS ROOM */
+            
+            reportDiv.style.width = isDom ? '1400px' : '1123px'; 
+            reportDiv.style.minHeight = isDom ? 'auto' : '794px'; 
+            
             reportDiv.style.backgroundColor = '#e0f2fe'; 
             reportDiv.style.padding = '30px';
             reportDiv.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
@@ -771,6 +774,9 @@
                     .col-bstart { width: 14%; white-space: nowrap; }
                     .col-bend { width: 14%; white-space: nowrap; }
                     .col-status { width: 40%; text-align: left !important; padding-left: 15px !important; }
+                    
+                    /* INT TABLE SPECIFIC */
+                    .intl-table td { font-weight: bold; }
                 </style>
                 
                 <table class="export-tbl">
@@ -833,8 +839,8 @@
                 htmlStr += `</tbody></table>`;
 
             } else {
-                // INTERNATIONAL COLUMN-BASED TABLE
-                htmlStr += `<table class="data-tbl"><tbody>`;
+                // INTERNATIONAL COLUMN-BASED TABLE (A4 Aspect Ratio)
+                htmlStr += `<table class="data-tbl intl-table"><tbody>`;
                 let rows = [
                     { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
                     { title: 'STD', key: 'std' }, { title: 'ATD', key: 'atd' },
