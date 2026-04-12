@@ -614,79 +614,97 @@
             });
         }
 
+        // --- BULLETPROOF EDIT FUNCTION ---
         function editFlight(index) {
-            let fl = appData.flights[index];
-            let isDom = appData.global.type === 'DOMESTIC';
-
-            document.getElementById('f-no').value = fl.fno.replace('BS-', '');
-            document.getElementById('f-sector').value = fl.sector;
-            document.getElementById('f-acreg').value = fl.acreg || '';
-            document.getElementById('f-std').value = fl.std.replace(' LT', ''); 
-
-            if (isDom) {
-                document.getElementById('dom-bstart').value = fl.bstart ? fl.bstart.replace(' LT', '') : '';
-                document.getElementById('dom-bend').value = fl.bend ? fl.bend.replace(' LT', '') : '';
-                
-                if (fl.domStatusType) {
-                    document.getElementById('dom-status').value = fl.domStatusType;
-                    if (fl.domStatusType === 'EARLY') {
-                        let match = fl.status.match(/\d+/);
-                        document.getElementById('dom-early-mins').value = match ? match[0] : '';
-                    } else if (fl.domStatusType === 'DELAY') {
-                        let match = fl.status.match(/\d+/);
-                        document.getElementById('dom-delay-mins').value = match ? match[0] : '';
-                        let reasonPart = fl.status.split('DUE TO ')[1];
-                        document.getElementById('dom-delay-reason').value = reasonPart ? reasonPart : '';
-                    }
-                }
-                handleDomStatusChange();
-            } else {
-                document.getElementById('f-atd').value = fl.atd ? fl.atd.replace(' LT', '') : ''; 
-                document.getElementById('f-gateno').value = fl.gateno === 'NIL' ? '' : (fl.gateno || '');
-                document.getElementById('f-capt').value = fl.capt || '';
-                document.getElementById('f-crew').value = fl.crew || '';
-                document.getElementById('f-bookload').value = fl.book || '';
-                
-                let loadParts = (fl.actual || '').split('+');
-                document.getElementById('f-act-adult').value = loadParts[0] || '';
-                document.getElementById('f-act-infant').value = loadParts[1] || '';
-                
-                document.getElementById('f-ns').value = fl.gatens === 'NIL' ? '' : fl.gatens;
-                document.getElementById('f-immi').value = fl.immi === 'NIL' ? '' : fl.immi;
-                document.getElementById('f-selfoff').value = fl.selfoff === 'NIL' ? '' : fl.selfoff;
-                document.getElementById('f-mail').value = fl.mail === 'NIL' ? '' : fl.mail;
-                document.getElementById('f-cargo').value = fl.cargo === 'NIL' ? '' : fl.cargo;
-                document.getElementById('f-loadctrl').value = fl.loadc || '';
-                document.getElementById('f-ramp').value = fl.ramp || '';
-                document.getElementById('f-maas').value = fl.maas === 'NIL' ? '' : fl.maas;
-                document.getElementById('f-vip').value = fl.vip === 'NIL' ? '' : fl.vip;
-                document.getElementById('f-wchr').value = fl.wchr === 'NIL' ? '' : fl.wchr;
-                document.getElementById('f-conpax').value = fl.conpax === 'NIL' ? '' : fl.conpax;
-                document.getElementById('f-obs').value = fl.obs === 'NIL' ? '' : fl.obs;
-                document.getElementById('f-foc').value = fl.foc === 'NIL' ? '' : fl.foc;
-                
-                document.getElementById('f-car').value = '';
-                document.getElementById('f-bus').value = '';
-                if(fl.vehicle && fl.vehicle !== 'NIL') {
-                    let vParts = fl.vehicle.split(', ');
-                    vParts.forEach(p => {
-                        if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
-                        if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
-                    });
-                }
-
-                if(fl.status && fl.status.includes('DELAY DUE TO')) {
-                    document.getElementById('f-delay-reason').value = fl.status.split('DUE TO ')[1];
-                } else {
-                    document.getElementById('f-delay-reason').value = '';
-                }
-
-                calculateStatus();
-            }
-
-            editingIndex = index;
+            // Force button text change & state update immediately
             document.getElementById('submit-btn').innerText = "MODIFY";
-            window.scrollTo(0, 0);
+            editingIndex = index;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            try {
+                let fl = appData.flights[index] || {};
+                let isDom = appData.global.type === 'DOMESTIC';
+
+                // Safe parsing helpers to prevent 'undefined' ghost text from old cache
+                const safeStr = (val) => (val !== null && val !== undefined) ? String(val) : '';
+                const cleanNil = (val) => {
+                    let str = safeStr(val).trim();
+                    if (str === '' || str === 'NIL' || str.toLowerCase() === 'undefined' || str.toLowerCase() === 'null') {
+                        return '';
+                    }
+                    return str;
+                };
+
+                document.getElementById('f-no').value = safeStr(fl.fno).replace('BS-', '');
+                document.getElementById('f-sector').value = safeStr(fl.sector);
+                document.getElementById('f-acreg').value = safeStr(fl.acreg);
+                document.getElementById('f-std').value = safeStr(fl.std).replace(' LT', ''); 
+
+                if (isDom) {
+                    document.getElementById('dom-bstart').value = cleanNil(fl.bstart).replace(' LT', '');
+                    document.getElementById('dom-bend').value = cleanNil(fl.bend).replace(' LT', '');
+                    
+                    if (fl.domStatusType) {
+                        document.getElementById('dom-status').value = fl.domStatusType;
+                        if (fl.domStatusType === 'EARLY') {
+                            let match = safeStr(fl.status).match(/\d+/);
+                            document.getElementById('dom-early-mins').value = match ? match[0] : '';
+                        } else if (fl.domStatusType === 'DELAY') {
+                            let match = safeStr(fl.status).match(/\d+/);
+                            document.getElementById('dom-delay-mins').value = match ? match[0] : '';
+                            let reasonPart = safeStr(fl.status).split('DUE TO ')[1];
+                            document.getElementById('dom-delay-reason').value = reasonPart ? reasonPart : '';
+                        }
+                    }
+                    handleDomStatusChange();
+                } else {
+                    document.getElementById('f-atd').value = cleanNil(fl.atd).replace(' LT', ''); 
+                    document.getElementById('f-gateno').value = cleanNil(fl.gateno);
+                    document.getElementById('f-capt').value = safeStr(fl.capt);
+                    document.getElementById('f-crew').value = safeStr(fl.crew);
+                    document.getElementById('f-bookload').value = safeStr(fl.book);
+                    
+                    let loadParts = safeStr(fl.actual).split('+');
+                    document.getElementById('f-act-adult').value = loadParts[0] || '';
+                    document.getElementById('f-act-infant').value = loadParts[1] || '';
+                    
+                    document.getElementById('f-ns').value = cleanNil(fl.gatens);
+                    document.getElementById('f-immi').value = cleanNil(fl.immi);
+                    document.getElementById('f-selfoff').value = cleanNil(fl.selfoff);
+                    document.getElementById('f-mail').value = cleanNil(fl.mail);
+                    document.getElementById('f-cargo').value = cleanNil(fl.cargo);
+                    document.getElementById('f-loadctrl').value = cleanNil(fl.loadc);
+                    document.getElementById('f-ramp').value = cleanNil(fl.ramp);
+                    document.getElementById('f-maas').value = cleanNil(fl.maas);
+                    document.getElementById('f-vip').value = cleanNil(fl.vip);
+                    document.getElementById('f-wchr').value = cleanNil(fl.wchr);
+                    document.getElementById('f-conpax').value = cleanNil(fl.conpax);
+                    document.getElementById('f-obs').value = cleanNil(fl.obs);
+                    document.getElementById('f-foc').value = cleanNil(fl.foc);
+                    
+                    document.getElementById('f-car').value = '';
+                    document.getElementById('f-bus').value = '';
+                    let vStr = safeStr(fl.vehicle);
+                    if(vStr && vStr !== 'NIL' && vStr.toLowerCase() !== 'undefined') {
+                        let vParts = vStr.split(', ');
+                        vParts.forEach(p => {
+                            if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
+                            if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
+                        });
+                    }
+
+                    if(safeStr(fl.status).includes('DELAY DUE TO')) {
+                        document.getElementById('f-delay-reason').value = safeStr(fl.status).split('DUE TO ')[1] || '';
+                    } else {
+                        document.getElementById('f-delay-reason').value = '';
+                    }
+
+                    calculateStatus();
+                }
+            } catch (err) {
+                console.error("Safely caught parsing error during edit:", err);
+                // Ensure UI state remains safe even if data parsing hits a weird edge case
+            }
         }
 
         function deleteFlight(index) {
@@ -775,7 +793,7 @@
                     .col-bend { width: 14%; white-space: nowrap; }
                     .col-status { width: 40%; text-align: left !important; padding-left: 15px !important; }
                     
-                    /* INT TABLE SPECIFIC */
+                    /* INT TABLE SPECIFIC: BOLD EVERYTHING */
                     .intl-table td { font-weight: bold; }
                 </style>
                 
@@ -864,7 +882,12 @@
                     htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
                     appData.flights.forEach(fl => { 
                         let val = fl[r.key];
-                        if ((val === undefined || val === '') && defaultNilKeys.includes(r.key)) val = 'NIL';
+                        // Also clear out any old cached 'undefined' ghosts in the final report
+                        if ((val === undefined || val === '' || String(val).toLowerCase() === 'undefined') && defaultNilKeys.includes(r.key)) {
+                            val = 'NIL';
+                        } else if (String(val).toLowerCase() === 'undefined') {
+                            val = '';
+                        }
                         htmlStr += `<td>${val || ''}</td>`; 
                     });
                     htmlStr += `</tr>`;
