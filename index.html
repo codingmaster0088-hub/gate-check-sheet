@@ -168,6 +168,10 @@
                     <input type="date" id="g-date">
                 </div>
                 <div class="input-group">
+                    <label>DUTY MANAGER</label>
+                    <input type="text" id="g-dutymanager">
+                </div>
+                <div class="input-group">
                     <label>SUPERVISOR</label>
                     <input type="text" id="g-supervisore">
                 </div>
@@ -307,7 +311,7 @@
 
         let appData = {
             user: { name: '', id: '' },
-            global: { type: 'INTERNATIONAL', session: 'MORNING', date: '', supervisor: '', staff: '' },
+            global: { type: 'INTERNATIONAL', session: 'MORNING', date: '', dutymanager: '', supervisor: '', staff: '' },
             flights: []
         };
         
@@ -378,6 +382,7 @@
             if(appData.global.date) document.getElementById('g-date').value = appData.global.date;
             if(appData.global.type) document.getElementById('g-gate-type').value = appData.global.type;
             if(appData.global.session) document.getElementById('g-session').value = appData.global.session;
+            if(appData.global.dutymanager) document.getElementById('g-dutymanager').value = appData.global.dutymanager;
             if(appData.global.supervisor) document.getElementById('g-supervisore').value = appData.global.supervisor;
             if(appData.global.staff) document.getElementById('g-staff').value = appData.global.staff;
             
@@ -390,6 +395,7 @@
                 type: document.getElementById('g-gate-type').value,
                 session: document.getElementById('g-session').value,
                 date: document.getElementById('g-date').value,
+                dutymanager: document.getElementById('g-dutymanager').value,
                 supervisor: document.getElementById('g-supervisore').value,
                 staff: document.getElementById('g-staff').value
             };
@@ -739,6 +745,10 @@
             let isDom = appData.global.type === 'DOMESTIC';
             let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
             let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
+            
+            // Format Duty Manager (DYNAMIC BADGE - Font size increased to 24px)
+            let dmStr = appData.global.dutymanager ? appData.global.dutymanager.toUpperCase() : '';
+            let dmHTML = dmStr ? `<div style="display: inline-block; background-color: #0033a0; color: #ffffff; padding: 8px 28px; border-radius: 50px; font-size: 24px; font-weight: 900; margin-top: 10px; margin-bottom: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); border: 2px solid #ffffff; letter-spacing: 1px; text-transform: uppercase;">DUTY MANAGER : ${dmStr}</div>` : '';
 
             // Create off-screen container for the JPG rendering
             let reportDiv = document.createElement('div');
@@ -782,8 +792,9 @@
                     .status-ontime { background-color: #a5d6a7 !important; color: #000000 !important;} /* Green */
                     
                     /* DOMESTIC LANDSCAPE SPECIFIC CSS */
-                    .dom-table { font-size: 18px; } /* Increased Text Size */
+                    .dom-table { font-size: 18px; } 
                     .dom-table th { background-color: #ffffff; color: #000; font-weight: bold; text-align: center; }
+                    .dom-table td { font-weight: bold; } /* DOMESTIC DATA CELLS BOLD */
                     .col-sl { width: 4%; }
                     .col-flight { width: 8%; }
                     .col-dest { width: 6%; }
@@ -802,6 +813,7 @@
                         <td colspan="2" class="bg-header-blue" style="text-align: center; vertical-align: middle;">
                             <h2 class="airline-title">US-BANGLA AIRLINES</h2>
                             <h3>${appData.global.type} GATE CHECKLIST (${appData.global.session})${initialSpan}</h3>
+                            ${dmHTML}
                         </td>
                     </tr>
                     <tr class="bg-light-yellow">
