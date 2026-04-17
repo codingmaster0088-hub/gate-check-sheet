@@ -682,7 +682,6 @@
                     document.getElementById('f-loadctrl').value = cleanNil(fl.loadc);
                     document.getElementById('f-ramp').value = cleanNil(fl.ramp);
                     document.getElementById('f-maas').value = cleanNil(fl.maas);
-                    document.getElementById('f-vip').value = cleanNil(fl.vip);
                     document.getElementById('f-wchr').value = cleanNil(fl.wchr);
                     document.getElementById('f-conpax').value = cleanNil(fl.conpax);
                     document.getElementById('f-obs').value = cleanNil(fl.obs);
@@ -894,13 +893,23 @@
                     htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
                     appData.flights.forEach(fl => { 
                         let val = fl[r.key];
-                        // Also clear out any old cached 'undefined' ghosts in the final report
-                        if ((val === undefined || val === '' || String(val).toLowerCase() === 'undefined') && defaultNilKeys.includes(r.key)) {
-                            val = 'NIL';
-                        } else if (String(val).toLowerCase() === 'undefined') {
-                            val = '';
+                        let displayVal = val;
+                        
+                        // NEW LOGIC: If INITIAL report, empty boxes (or auto-NIL) show as blank string
+                        if (isInitial) {
+                            if (displayVal === undefined || displayVal === null || String(displayVal).toLowerCase() === 'undefined' || String(displayVal).trim() === '' || String(displayVal).toUpperCase() === 'NIL') {
+                                displayVal = '';
+                            }
+                        } else {
+                            // Standard Final Report logic (NIL for specific keys)
+                            if ((val === undefined || val === '' || String(val).toLowerCase() === 'undefined') && defaultNilKeys.includes(r.key)) {
+                                displayVal = 'NIL';
+                            } else if (String(val).toLowerCase() === 'undefined') {
+                                displayVal = '';
+                            }
                         }
-                        htmlStr += `<td>${val || ''}</td>`; 
+                        
+                        htmlStr += `<td>${displayVal || ''}</td>`; 
                     });
                     htmlStr += `</tr>`;
                 });
