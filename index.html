@@ -543,9 +543,9 @@
                     let diff = atdMins - stdMins;
                     if(diff < -720) diff += 1440;
                     
-                    if(diff === 0) intlStatusFinal = "FLIGHT IS ONTIME";
-                    else if(diff < 0) intlStatusFinal = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`;
-                    else intlStatusFinal = `${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
+                    if(diff === 0) intlStatusFinal = "FLIGHT ONTIME";
+                    else if(diff < 0) intlStatusFinal = `FLIGHT ${Math.abs(diff)} MINS EARLY`;
+                    else intlStatusFinal = `FLIGHT ${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
                 }
 
                 newFlight = {
@@ -631,7 +631,6 @@
                 let fl = appData.flights[index] || {};
                 let isDom = appData.global.type === 'DOMESTIC';
 
-                // Safe parsing helpers to prevent 'undefined' ghost text from old cache
                 const safeStr = (val) => (val !== null && val !== undefined) ? String(val) : '';
                 const cleanNil = (val) => {
                     let str = safeStr(val).trim();
@@ -708,7 +707,6 @@
                 }
             } catch (err) {
                 console.error("Safely caught parsing error during edit:", err);
-                // Ensure UI state remains safe even if data parsing hits a weird edge case
             }
         }
 
@@ -740,22 +738,20 @@
             
             let reportDateStr = formatReportDate(appData.global.date);
 
-            // INITIAL Logic only applies to International (missing ATD)
             let isDom = appData.global.type === 'DOMESTIC';
             let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
             let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
             
-            // Format Duty Manager (DYNAMIC BADGE - Font size increased to 24px)
             let dmStr = appData.global.dutymanager ? appData.global.dutymanager.toUpperCase() : '';
-            let dmHTML = dmStr ? `<div style="display: inline-block; background-color: #0033a0; color: #ffffff; padding: 8px 28px; border-radius: 50px; font-size: 24px; font-weight: 900; margin-top: 10px; margin-bottom: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); border: 2px solid #ffffff; letter-spacing: 1px; text-transform: uppercase;">DUTY MANAGER : ${dmStr}</div>` : '';
+            let dmHTML = dmStr ? `<div style="display: inline-block; background-color: #0033a0; color: #ffffff; padding: 8px 35px; border-radius: 50px; font-size: 24px; font-weight: 900; margin-top: 10px; margin-bottom: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); border: 2px solid #ffffff; letter-spacing: 1px; text-transform: uppercase;">DUTY MANAGER : ${dmStr}</div>` : '';
 
-            // Create off-screen container for the JPG rendering
             let reportDiv = document.createElement('div');
             reportDiv.id = 'report-export-container';
             reportDiv.style.position = 'absolute';
             reportDiv.style.top = '-9999px'; 
             reportDiv.style.left = '0';
             
+            // Standard Landscape Width for Domestic matching Attachment 1
             reportDiv.style.width = isDom ? '1400px' : '1123px'; 
             reportDiv.style.minHeight = isDom ? 'auto' : '794px'; 
             
@@ -778,32 +774,30 @@
                     .flight-row th, .flight-row td { background-color: #b3d4ff; font-weight: bold; color: var(--primary); }
                     .status-td { text-align: center !important; vertical-align: middle; padding: 15px 5px !important; line-height: 1.3; font-weight: bold; font-size: 14px; }
                     
-                    /* Custom background colors */
                     .bg-header-blue { background-color: #b3d4ff !important; }
                     .bg-light-yellow { background-color: #fff9c4 !important; }
                     
-                    /* FIXED RED WITH ADJUSTABLE WHITE FONT */
+                    /* FIXED COLORS AS PER REQUEST */
                     .status-delay { background-color: #ff0000 !important; color: #ffffff !important; } 
                     
-                    /* DARK YELLOW FOR EARLY */
-                    .status-early { background-color: #ffb300 !important; color: #000000 !important; } 
+                    /* UPDATED STATUS COLORS */
+                    .st-blue { background-color: #007bff !important; color: #ffffff !important; } /* Blue for Early */
+                    .st-sky { background-color: #87ceeb !important; color: #000000 !important; } /* Sky Blue for Ontime */
                     
-                    .status-ontime { background-color: #a5d6a7 !important; color: #000000 !important;} /* Green */
+                    .dom-table { font-size: 19px; } 
+                    .dom-table th { background-color: #ffffff; color: #000; font-weight: 900; text-align: center; border: 1px solid #000; padding: 12px 5px; }
+                    .dom-table td { font-weight: bold; border: 1px solid #000; color: #000; padding: 10px 5px; }
                     
-                    /* DOMESTIC LANDSCAPE SPECIFIC CSS */
-                    .dom-table { font-size: 18px; } 
-                    .dom-table th { background-color: #ffffff; color: #000; font-weight: bold; text-align: center; }
-                    .dom-table td { font-weight: bold; } /* DOMESTIC DATA CELLS BOLD */
+                    /* REDUCED OTHER COLUMNS TO MAXIMIZE STATUS COLUMN */
                     .col-sl { width: 4%; }
                     .col-flight { width: 8%; }
                     .col-dest { width: 6%; }
                     .col-acreg { width: 7%; }
-                    .col-std { width: 7%; }
-                    .col-bstart { width: 14%; white-space: nowrap; }
-                    .col-bend { width: 14%; white-space: nowrap; }
-                    .col-status { width: 40%; text-align: left !important; padding-left: 15px !important; }
+                    .col-std { width: 8%; }
+                    .col-bstart { width: 11%; }
+                    .col-bend { width: 11%; }
+                    .col-status { width: 45%; text-align: left !important; padding-left: 15px !important; text-transform: uppercase; }
                     
-                    /* INT TABLE SPECIFIC: BOLD EVERYTHING */
                     .intl-table td { font-weight: bold; }
                 </style>
                 
@@ -826,7 +820,6 @@
                 </table>`;
 
             if (isDom) {
-                // DOMESTIC ROW-BASED TABLE (LANDSCAPE)
                 htmlStr += `
                 <table class="data-tbl dom-table">
                     <thead>
@@ -849,8 +842,8 @@
                     let statusUpper = (fl.status || '').toUpperCase();
                     
                     if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'status-early';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'status-ontime';
+                    else if (statusUpper.includes('EARLY')) statusBgClass = 'st-blue';
+                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'st-sky';
 
                     htmlStr += `
                         <tr>
@@ -868,7 +861,6 @@
                 htmlStr += `</tbody></table>`;
 
             } else {
-                // INTERNATIONAL COLUMN-BASED TABLE (A4 Aspect Ratio)
                 htmlStr += `<table class="data-tbl intl-table"><tbody>`;
                 let rows = [
                     { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
@@ -895,34 +887,30 @@
                         let val = fl[r.key];
                         let displayVal = val;
                         
-                        // NEW LOGIC: If INITIAL report, empty boxes (or auto-NIL) show as blank string
                         if (isInitial) {
                             if (displayVal === undefined || displayVal === null || String(displayVal).toLowerCase() === 'undefined' || String(displayVal).trim() === '' || String(displayVal).toUpperCase() === 'NIL') {
                                 displayVal = '';
                             }
                         } else {
-                            // Standard Final Report logic (NIL for specific keys)
                             if ((val === undefined || val === '' || String(val).toLowerCase() === 'undefined') && defaultNilKeys.includes(r.key)) {
                                 displayVal = 'NIL';
                             } else if (String(val).toLowerCase() === 'undefined') {
                                 displayVal = '';
                             }
                         }
-                        
                         htmlStr += `<td>${displayVal || ''}</td>`; 
                     });
                     htmlStr += `</tr>`;
                 });
 
-                // Status Row Colors for Intl
                 htmlStr += `<tr><th class="row-header">STATUS</th>`;
                 appData.flights.forEach(fl => { 
                     let statusBgClass = '';
                     let statusUpper = (fl.status || '').toUpperCase();
                     
                     if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'status-early';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'status-ontime';
+                    else if (statusUpper.includes('EARLY')) statusBgClass = 'st-blue';
+                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'st-sky';
 
                     htmlStr += `<td class="status-td ${statusBgClass}">${fl.status || ''}</td>`; 
                 });
@@ -932,7 +920,6 @@
             reportDiv.innerHTML = htmlStr;
             document.body.appendChild(reportDiv);
 
-            // Execute html2canvas to convert DOM to JPG
             html2canvas(reportDiv, { 
                 scale: 2, 
                 backgroundColor: '#e0f2fe' 
@@ -948,7 +935,7 @@
                 btn.disabled = false;
             }).catch(err => {
                 console.error("Error generating JPG:", err);
-                alert("Error generating JPG image. Please ensure you have an active internet connection.");
+                alert("Error generating JPG image.");
                 document.body.removeChild(reportDiv);
                 btn.innerText = originalText;
                 btn.disabled = false;
