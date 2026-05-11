@@ -84,7 +84,12 @@
         .btn-report { background-color: #28a745; }
         .btn-report:hover { background-color: #218838; }
 
-        .table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; } /* Mobile smooth scrolling */
+        .btn-share { background-color: #f39c12 !important; }
+        .btn-share:hover { background-color: #e67e22 !important; }
+        .btn-receive { background-color: #8e44ad !important; }
+        .btn-receive:hover { background-color: #7d3c98 !important; }
+
+        .table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; background: white; min-width: 700px; }
         table th, table td { border: 1px solid var(--border); padding: 10px 8px; text-align: left; }
         table th { background-color: var(--secondary); color: var(--primary); }
@@ -100,7 +105,6 @@
             100% { opacity: 0; }
         }
 
-        /* --- MOBILE SPECIFIC FIXES --- */
         @media (max-width: 600px) {
             .grid-form { grid-template-columns: 1fr; } 
             .input-group[style*="grid-column: span 2"] { grid-column: auto !important; } 
@@ -114,12 +118,8 @@
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash-screen" style="display: flex;">
-        WELCOME TO RADOAN'S APP
-    </div>
+    <div id="splash-screen" style="display: flex;">WELCOME TO RADOAN'S APP</div>
 
-    <!-- Login Screen -->
     <div id="login-screen">
         <div class="login-box">
             <h1>US BANGLA AIRLINES</h1>
@@ -138,14 +138,12 @@
         </div>
     </div>
 
-    <!-- Dashboard Screen -->
     <div id="dashboard-screen">
         <div class="top-bar">
             <h2>Dashboard | Welcome <span id="user-display-name"></span></h2>
             <button onclick="logOut()">LOG OUT</button>
         </div>
 
-        <!-- Global Details -->
         <div class="section">
             <h3 class="section-title">General Information</h3>
             <div class="grid-form">
@@ -182,36 +180,17 @@
             </div>
         </div>
 
-        <!-- Flight Entry Form -->
         <div class="section">
             <h3 class="section-title">Add / Modify Flight</h3>
             <form id="flight-form">
                 <div class="grid-form">
-                    
-                    <!-- SHARED FIELDS -->
-                    <div class="input-group">
-                        <label>FLIGHT NO (e.g. 321)</label>
-                        <input type="text" id="f-no" required oninput="autoFillSector()">
-                    </div>
-                    <div class="input-group">
-                        <label>SECTOR / DEST</label>
-                        <input type="text" id="f-sector" required>
-                    </div>
-                    <div class="input-group">
-                        <label>A/C REG (Optional)</label>
-                        <input type="text" id="f-acreg">
-                    </div>
-                    <div class="input-group">
-                        <label>STD (e.g. 1410)</label>
-                        <input type="text" id="f-std" required maxlength="4" pattern="\d{4}" placeholder="HHMM" oninput="calculateStatus()">
-                    </div>
+                    <div class="input-group"><label>FLIGHT NO</label><input type="text" id="f-no" required oninput="autoFillSector()"></div>
+                    <div class="input-group"><label>SECTOR / DEST</label><input type="text" id="f-sector" required></div>
+                    <div class="input-group"><label>A/C REG</label><input type="text" id="f-acreg"></div>
+                    <div class="input-group"><label>STD (HHMM)</label><input type="text" id="f-std" required maxlength="4" pattern="\d{4}" placeholder="HHMM" oninput="calculateStatus()"></div>
 
-                    <!-- ============================================== -->
-                    <!-- DOMESTIC ONLY FIELDS -->
-                    <!-- ============================================== -->
                     <div class="input-group dom-field"><label>BOARDING START</label><input type="text" id="dom-bstart" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
                     <div class="input-group dom-field"><label>BOARDING END</label><input type="text" id="dom-bend" maxlength="4" pattern="\d{4}" placeholder="HHMM"></div>
-                    
                     <div class="input-group dom-field">
                         <label>STATUS</label>
                         <select id="dom-status" onchange="handleDomStatusChange()">
@@ -220,83 +199,60 @@
                             <option value="DELAY">DELAY</option>
                         </select>
                     </div>
-                    <div class="input-group dom-field" id="dom-early-box" style="display: none;">
-                        <label>MINS EARLY</label>
-                        <input type="number" id="dom-early-mins" placeholder="e.g. 10">
-                    </div>
-                    <div class="input-group dom-field" id="dom-delay-mins-box" style="display: none;">
-                        <label>DELAY MINS</label>
-                        <input type="number" id="dom-delay-mins" placeholder="e.g. 10">
-                    </div>
-                    <div class="input-group dom-field" id="dom-delay-box" style="display: none;">
-                        <label>DELAY REASON</label>
-                        <input type="text" id="dom-delay-reason" placeholder="e.g. PADMA">
-                    </div>
+                    <div class="input-group dom-field" id="dom-early-box" style="display: none;"><label>MINS EARLY</label><input type="number" id="dom-early-mins"></div>
+                    <div class="input-group dom-field" id="dom-delay-mins-box" style="display: none;"><label>DELAY MINS</label><input type="number" id="dom-delay-mins"></div>
+                    <div class="input-group dom-field" id="dom-delay-box" style="display: none;"><label>DELAY REASON</label><input type="text" id="dom-delay-reason"></div>
 
-                    <!-- ============================================== -->
-                    <!-- INTERNATIONAL ONLY FIELDS -->
-                    <!-- ============================================== -->
-                    <div class="input-group intl-field">
-                        <label>ATD (e.g. 1425)</label>
-                        <input type="text" id="f-atd" maxlength="4" pattern="\d{4}" placeholder="HHMM (Optional for Initial)" oninput="calculateStatus()">
-                    </div>
+                    <div class="input-group intl-field"><label>ATD (HHMM)</label><input type="text" id="f-atd" maxlength="4" pattern="\d{4}" placeholder="Optional for Initial" oninput="calculateStatus()"></div>
                     <div class="input-group intl-field" style="grid-column: span 2;">
                         <label>STATUS CALCULATOR</label>
                         <span id="status-display">Awaiting 4-Digit Time Input...</span>
-                        <div id="delay-box" style="display: none; margin-top: 10px;">
-                            <input type="text" id="f-delay-reason" placeholder="Enter delay reason here...">
-                        </div>
+                        <div id="delay-box" style="display: none; margin-top: 10px;"><input type="text" id="f-delay-reason" placeholder="Delay reason..."></div>
                     </div>
-                    
                     <div class="input-group intl-field"><label>GATE NO</label><input type="text" id="f-gateno"></div>
                     <div class="input-group intl-field"><label>CAPTAIN</label><input type="text" id="f-capt"></div>
-                    <div class="input-group intl-field"><label>CREW CONFIG (e.g. 2/5)</label><input type="text" id="f-crew"></div>
+                    <div class="input-group intl-field"><label>CREW CONFIG</label><input type="text" id="f-crew"></div>
                     <div class="input-group intl-field"><label>BOOK LOAD</label><input type="number" id="f-bookload"></div>
-                    <div class="input-group intl-field"><label>ACTUAL LOAD (ADULT)</label><input type="number" id="f-act-adult"></div>
-                    <div class="input-group intl-field"><label>ACTUAL LOAD (INFANT)</label><input type="number" id="f-act-infant"></div>
-                    <div class="input-group intl-field"><label>GATE NO SHOW</label><input type="number" id="f-ns" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>IMMI OFF</label><input type="number" id="f-immi" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>SELF OFF</label><input type="number" id="f-selfoff" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>MAIL</label><input type="number" id="f-mail" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>CARGO</label><input type="text" id="f-cargo" placeholder="0 or Blank = NIL"></div>
+                    <div class="input-group intl-field"><label>ADULT</label><input type="number" id="f-act-adult"></div>
+                    <div class="input-group intl-field"><label>INFANT</label><input type="number" id="f-act-infant"></div>
+                    <div class="input-group intl-field"><label>GATE NS</label><input type="number" id="f-ns"></div>
+                    <div class="input-group intl-field"><label>IMM OFF</label><input type="number" id="f-immi"></div>
+                    <div class="input-group intl-field"><label>SELF OFF</label><input type="number" id="f-selfoff"></div>
+                    <div class="input-group intl-field"><label>MAIL</label><input type="number" id="f-mail"></div>
+                    <div class="input-group intl-field"><label>CARGO</label><input type="text" id="f-cargo"></div>
                     <div class="input-group intl-field"><label>LOAD CONTROL</label><input type="text" id="f-loadctrl"></div>
                     <div class="input-group intl-field"><label>RAMP OFFICER</label><input type="text" id="f-ramp"></div>
-                    <div class="input-group intl-field"><label>MAAS</label><input type="number" id="f-maas" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>WCHR/C</label><input type="number" id="f-wchr" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>CON PAX/BAG</label><input type="text" id="f-conpax" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>OBS</label><input type="number" id="f-obs" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>FOC</label><input type="number" id="f-foc" placeholder="0 or Blank = NIL"></div>
-                    <div class="input-group intl-field"><label>VEHICLE (CAR)</label><input type="text" id="f-car"></div>
-                    <div class="input-group intl-field"><label>VEHICLE (BUS)</label><input type="text" id="f-bus"></div>
+                    <div class="input-group intl-field"><label>MAAS</label><input type="number" id="f-maas"></div>
+                    <div class="input-group intl-field"><label>WCHR/C</label><input type="number" id="f-wchr"></div>
+                    <div class="input-group intl-field"><label>CON PAX/BAG</label><input type="text" id="f-conpax"></div>
+                    <div class="input-group intl-field"><label>OBS</label><input type="number" id="f-obs"></div>
+                    <div class="input-group intl-field"><label>FOC</label><input type="number" id="f-foc"></div>
+                    <div class="input-group intl-field"><label>CAR</label><input type="text" id="f-car"></div>
+                    <div class="input-group intl-field"><label>BUS</label><input type="text" id="f-bus"></div>
                 </div>
                 
                 <div class="btn-group">
                     <button type="submit" id="submit-btn">ADD FLIGHT</button>
                     <button type="button" class="btn-report" onclick="generateFinalReport()">FINAL REPORT</button>
+                    <button type="button" class="btn-share" onclick="shareData()">SHARE DATA</button>
+                    <button type="button" class="btn-receive" onclick="receiveData()">RECEIVE DATA</button>
+                    <input type="file" id="import-file" style="display: none;" accept=".usba,.json" onchange="handleImport(event)">
                 </div>
             </form>
         </div>
 
-        <!-- Added Flights Table -->
         <div class="section">
-            <h3 class="section-title">Added Flights Summary</h3>
+            <h3 class="section-title">Summary Table</h3>
             <div class="table-responsive">
                 <table>
-                    <thead>
-                        <tr id="summary-table-headers">
-                            <th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="flights-tbody">
-                        <!-- Rows auto-generate here -->
-                    </tbody>
+                    <thead><tr id="summary-table-headers"><th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
+                    <tbody id="flights-tbody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Sector Mapping Data ---
         const sectorMap = {
             'CGP': [101,103,105,107,109,111,113,115,117,119],
             'JSR': [121,123,125,127,129],
@@ -309,636 +265,135 @@
             'CAN': [325,327], 'DOH': [333,335], 'KUL': [315,317,319], 'SIN': [307, 309]
         };
 
-        let appData = {
-            user: { name: '', id: '' },
-            global: { type: 'INTERNATIONAL', session: 'MORNING', date: '', dutymanager: '', supervisor: '', staff: '' },
-            flights: []
-        };
-        
+        let appData = { user: { name: '', id: '' }, global: { type: 'INTERNATIONAL', session: 'MORNING', date: '', dutymanager: '', supervisor: '', staff: '' }, flights: [] };
         let editingIndex = -1;
 
-        // --- Initialization ---
-        window.onload = () => {
-            document.getElementById('g-date').valueAsDate = new Date();
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-                checkLogin();
-            }, 2000);
-        };
-
-        function checkLogin() {
-            const savedData = localStorage.getItem('usba_app_data');
-            if(savedData) {
-                appData = JSON.parse(savedData);
-                if(appData.user.name) { showDashboard(); return; }
-            }
-            document.getElementById('login-screen').style.display = 'flex';
-        }
-
-        // --- Login Handling ---
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            appData.user.name = document.getElementById('prep-by').value;
-            appData.user.id = document.getElementById('usba-id').value;
-            saveData();
-            document.getElementById('login-screen').style.display = 'none';
-            showDashboard();
-        });
-
-        function logOut() {
-            localStorage.removeItem('usba_app_data');
-            location.reload();
-        }
-
+        window.onload = () => { document.getElementById('g-date').valueAsDate = new Date(); setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; checkLogin(); }, 2000); };
+        function checkLogin() { const savedData = localStorage.getItem('usba_app_data'); if(savedData) { appData = JSON.parse(savedData); if(appData.user.name) { showDashboard(); return; } } document.getElementById('login-screen').style.display = 'flex'; }
+        document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); appData.user.name = document.getElementById('prep-by').value; appData.user.id = document.getElementById('usba-id').value; saveData(); document.getElementById('login-screen').style.display = 'none'; showDashboard(); });
+        function logOut() { localStorage.removeItem('usba_app_data'); location.reload(); }
+        function saveData() { appData.global = { type: document.getElementById('g-gate-type').value, session: document.getElementById('g-session').value, date: document.getElementById('g-date').value, dutymanager: document.getElementById('g-dutymanager').value, supervisor: document.getElementById('g-supervisore').value, staff: document.getElementById('g-staff').value }; localStorage.setItem('usba_app_data', JSON.stringify(appData)); }
         function toggleGateTypeLogic() {
-            const gateType = document.getElementById('g-gate-type').value;
-            const domFields = document.querySelectorAll('.dom-field');
-            const intlFields = document.querySelectorAll('.intl-field');
-            const summaryHeaders = document.getElementById('summary-table-headers');
-
-            if (gateType === 'DOMESTIC') {
-                domFields.forEach(el => el.style.display = 'block');
-                intlFields.forEach(el => el.style.display = 'none');
-                summaryHeaders.innerHTML = `<th>FLIGHT</th><th>DEST</th><th>STD</th><th>BOARDING END</th><th>STATUS</th><th>ACTIONS</th>`;
-                handleDomStatusChange(); // Ensure correct boxes show based on default
-            } else {
-                domFields.forEach(el => el.style.display = 'none');
-                intlFields.forEach(el => el.style.display = 'block');
-                summaryHeaders.innerHTML = `<th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>`;
-            }
+            const gateType = document.getElementById('g-gate-type').value; const domFields = document.querySelectorAll('.dom-field'); const intlFields = document.querySelectorAll('.intl-field'); const summaryHeaders = document.getElementById('summary-table-headers');
+            if (gateType === 'DOMESTIC') { domFields.forEach(el => el.style.display = 'block'); intlFields.forEach(el => el.style.display = 'none'); summaryHeaders.innerHTML = `<th>FLIGHT</th><th>DEST</th><th>STD</th><th>BOARDING END</th><th>STATUS</th><th>ACTIONS</th>`; handleDomStatusChange(); } 
+            else { domFields.forEach(el => el.style.display = 'none'); intlFields.forEach(el => el.style.display = 'block'); summaryHeaders.innerHTML = `<th>FLIGHT</th><th>SECTOR</th><th>STD</th><th>ATD</th><th>STATUS</th><th>ACTIONS</th>`; }
         }
-
-        function handleDomStatusChange() {
-            const status = document.getElementById('dom-status').value;
-            document.getElementById('dom-early-box').style.display = status === 'EARLY' ? 'block' : 'none';
-            document.getElementById('dom-delay-mins-box').style.display = status === 'DELAY' ? 'block' : 'none';
-            document.getElementById('dom-delay-box').style.display = status === 'DELAY' ? 'block' : 'none';
-        }
-
+        function handleDomStatusChange() { const status = document.getElementById('dom-status').value; document.getElementById('dom-early-box').style.display = status === 'EARLY' ? 'block' : 'none'; document.getElementById('dom-delay-mins-box').style.display = status === 'DELAY' ? 'block' : 'none'; document.getElementById('dom-delay-box').style.display = status === 'DELAY' ? 'block' : 'none'; }
         function showDashboard() {
-            document.getElementById('dashboard-screen').style.display = 'flex';
-            document.getElementById('user-display-name').innerText = appData.user.name;
-            
-            if(appData.global.date) document.getElementById('g-date').value = appData.global.date;
-            if(appData.global.type) document.getElementById('g-gate-type').value = appData.global.type;
-            if(appData.global.session) document.getElementById('g-session').value = appData.global.session;
-            if(appData.global.dutymanager) document.getElementById('g-dutymanager').value = appData.global.dutymanager;
-            if(appData.global.supervisor) document.getElementById('g-supervisore').value = appData.global.supervisor;
-            if(appData.global.staff) document.getElementById('g-staff').value = appData.global.staff;
-            
-            toggleGateTypeLogic(); 
-            renderTable();
+            document.getElementById('dashboard-screen').style.display = 'flex'; document.getElementById('user-display-name').innerText = appData.user.name;
+            const g = appData.global; document.getElementById('g-date').value = g.date || ''; document.getElementById('g-gate-type').value = g.type || 'INTERNATIONAL'; document.getElementById('g-session').value = g.session || 'MORNING'; document.getElementById('g-dutymanager').value = g.dutymanager || ''; document.getElementById('g-supervisore').value = g.supervisor || ''; document.getElementById('g-staff').value = g.staff || '';
+            toggleGateTypeLogic(); renderTable();
         }
-
-        function saveData() {
-            appData.global = {
-                type: document.getElementById('g-gate-type').value,
-                session: document.getElementById('g-session').value,
-                date: document.getElementById('g-date').value,
-                dutymanager: document.getElementById('g-dutymanager').value,
-                supervisor: document.getElementById('g-supervisore').value,
-                staff: document.getElementById('g-staff').value
-            };
-            localStorage.setItem('usba_app_data', JSON.stringify(appData));
-        }
-
-        // --- Form Logic ---
-        function autoFillSector() {
-            let flightInput = document.getElementById('f-no').value;
-            let numMatches = flightInput.match(/\d+/);
-            if(!numMatches) return;
-            let num = parseInt(numMatches[0]);
-            
-            for(let sector in sectorMap) {
-                if(sectorMap[sector].includes(num)) {
-                    document.getElementById('f-sector').value = sector;
-                    return;
-                }
-            }
-        }
-
+        function autoFillSector() { let flightInput = document.getElementById('f-no').value; let numMatches = flightInput.match(/\d+/); if(!numMatches) return; let num = parseInt(numMatches[0]); for(let sector in sectorMap) { if(sectorMap[sector].includes(num)) { document.getElementById('f-sector').value = sector; return; } } }
         function calculateStatus() {
-            let stdStr = document.getElementById('f-std').value;
-            let atdStr = document.getElementById('f-atd').value;
-            let display = document.getElementById('status-display');
-            let delayBox = document.getElementById('delay-box');
-            
-            if(!/^\d{4}$/.test(stdStr)) {
-                display.innerText = "Awaiting 4-Digit STD Input..."; display.style.color = "var(--primary)";
-                delayBox.style.display = "none"; return;
-            }
-            if(!/^\d{4}$/.test(atdStr)) {
-                display.innerText = "Awaiting ATD (Optional for Initial Report)"; display.style.color = "var(--primary)";
-                delayBox.style.display = "none"; return;
-            }
-
-            let stdMins = parseInt(stdStr.substring(0,2)) * 60 + parseInt(stdStr.substring(2,4));
-            let atdMins = parseInt(atdStr.substring(0,2)) * 60 + parseInt(atdStr.substring(2,4));
-            
-            let diff = atdMins - stdMins;
-
-            if(diff < -720) diff += 1440;
-            if(diff > 720) diff -= 1440;
-
-            if(diff === 0) {
-                display.innerText = "FLIGHT IS ONTIME"; display.style.color = "green";
-                delayBox.style.display = "none"; document.getElementById('f-delay-reason').value = "";
-            } else if (diff < 0) {
-                display.innerText = `FLIGHT IS ${Math.abs(diff)} MINS EARLY`; display.style.color = "green";
-                delayBox.style.display = "none"; document.getElementById('f-delay-reason').value = "";
-            } else {
-                display.innerText = `FLIGHT ${diff} MINS DELAY DUE TO:`; display.style.color = "red";
-                delayBox.style.display = "block";
-            }
+            let stdStr = document.getElementById('f-std').value; let atdStr = document.getElementById('f-atd').value; let display = document.getElementById('status-display'); let delayBox = document.getElementById('delay-box');
+            if(!/^\d{4}$/.test(stdStr)) { display.innerText = "Awaiting HHMM STD..."; delayBox.style.display = "none"; return; }
+            if(!/^\d{4}$/.test(atdStr)) { display.innerText = "Awaiting ATD..."; delayBox.style.display = "none"; return; }
+            let stdMins = parseInt(stdStr.substring(0,2)) * 60 + parseInt(stdStr.substring(2,4)); let atdMins = parseInt(atdStr.substring(0,2)) * 60 + parseInt(atdStr.substring(2,4));
+            let diff = atdMins - stdMins; if(diff < -720) diff += 1440; if(diff > 720) diff -= 1440;
+            if(diff === 0) { display.innerText = "FLIGHT ONTIME"; display.style.color = "green"; delayBox.style.display = "none";
+            } else if (diff < 0) { display.innerText = `FLIGHT ${Math.abs(diff)} MINS EARLY`; display.style.color = "green"; delayBox.style.display = "none";
+            } else { display.innerText = `FLIGHT ${diff} MINS DELAY DUE TO:`; display.style.color = "red"; delayBox.style.display = "block"; }
         }
-
         function formatNil(val) { return (!val || val === '0') ? 'NIL' : val; }
-        
         function formatReportDate(dStr) {
-            let year, month, day;
-            if (dStr) {
-                let parts = dStr.split('-');
-                year = parts[0];
-                month = parseInt(parts[1], 10) - 1;
-                day = parts[2];
-            } else {
-                let today = new Date();
-                year = today.getFullYear();
-                month = today.getMonth();
-                day = String(today.getDate()).padStart(2, '0');
-            }
-            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-            return `${day} ${months[month]} ${year}`;
+            let today = dStr ? new Date(dStr) : new Date(); const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            return `${String(today.getDate()).padStart(2, '0')} ${months[today.getMonth()]} ${today.getFullYear()}`;
         }
 
-        // --- Add/Modify Flight Handling ---
         document.getElementById('flight-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            let isDomestic = document.getElementById('g-gate-type').value === 'DOMESTIC';
-            let fnoRaw = document.getElementById('f-no').value;
-            let fnoFinal = fnoRaw.toUpperCase().startsWith('BS') ? fnoRaw.toUpperCase() : 'BS-' + fnoRaw.toUpperCase();
-            let stdRaw = document.getElementById('f-std').value;
-            
+            e.preventDefault(); let isDom = document.getElementById('g-gate-type').value === 'DOMESTIC'; let fnoRaw = document.getElementById('f-no').value; let fnoFinal = fnoRaw.toUpperCase().startsWith('BS') ? fnoRaw.toUpperCase() : 'BS-' + fnoRaw.toUpperCase(); let stdRaw = document.getElementById('f-std').value;
             let newFlight = {};
-
-            if (isDomestic) {
-                // Strict Mandatory Checks for Domestic
-                if (!document.getElementById('f-acreg').value.trim()) { alert("A/C REG is mandatory for Domestic."); return; }
-                if (!document.getElementById('dom-bstart').value.trim()) { alert("BOARDING START is mandatory."); return; }
-                if (!document.getElementById('dom-bend').value.trim()) { alert("BOARDING END is mandatory."); return; }
-                
-                let domStatusDrop = document.getElementById('dom-status').value;
-                if (domStatusDrop === 'EARLY' && !document.getElementById('dom-early-mins').value.trim()) { alert("MINS EARLY is mandatory."); return; }
-                if (domStatusDrop === 'DELAY') {
-                    if (!document.getElementById('dom-delay-mins').value.trim()) { alert("DELAY MINS is mandatory."); return; }
-                    if (!document.getElementById('dom-delay-reason').value.trim()) { alert("DELAY REASON is mandatory."); return; }
-                }
-
-                let bStartRaw = document.getElementById('dom-bstart').value;
-                let bEndRaw = document.getElementById('dom-bend').value;
-                let domFinalStatusStr = "";
-                
-                if (domStatusDrop === 'ONTIME') {
-                    domFinalStatusStr = "FLIGHT ONTIME";
-                } else if (domStatusDrop === 'EARLY') {
-                    let mins = document.getElementById('dom-early-mins').value;
-                    domFinalStatusStr = `FLIGHT ${mins} MINS EARLY`;
-                } else if (domStatusDrop === 'DELAY') {
-                    let dMins = document.getElementById('dom-delay-mins').value;
-                    let reason = document.getElementById('dom-delay-reason').value;
-                    domFinalStatusStr = `FLIGHT ${dMins} MINS DELAY DUE TO ${reason.toUpperCase()}`; 
-                }
-
-                newFlight = {
-                    fno: fnoFinal,
-                    sector: document.getElementById('f-sector').value.toUpperCase(),
-                    acreg: document.getElementById('f-acreg').value.toUpperCase(),
-                    std: stdRaw + ' LT',
-                    bstart: bStartRaw ? bStartRaw + ' LT' : '',
-                    bend: bEndRaw ? bEndRaw + ' LT' : '',
-                    status: domFinalStatusStr,
-                    domStatusType: domStatusDrop 
-                };
-
+            if (isDom) {
+                let domStatusDrop = document.getElementById('dom-status').value; let domFinalStatusStr = "";
+                if (domStatusDrop === 'ONTIME') domFinalStatusStr = "FLIGHT ONTIME";
+                else if (domStatusDrop === 'EARLY') domFinalStatusStr = `FLIGHT ${document.getElementById('dom-early-mins').value} MINS EARLY`;
+                else if (domStatusDrop === 'DELAY') domFinalStatusStr = `FLIGHT ${document.getElementById('dom-delay-mins').value} MINS DELAY DUE TO ${document.getElementById('dom-delay-reason').value.toUpperCase()}`;
+                newFlight = { fno: fnoFinal, sector: document.getElementById('f-sector').value.toUpperCase(), acreg: document.getElementById('f-acreg').value.toUpperCase(), std: stdRaw + ' LT', bstart: document.getElementById('dom-bstart').value + ' LT', bend: document.getElementById('dom-bend').value + ' LT', status: domFinalStatusStr, domStatusType: domStatusDrop };
             } else {
-                // INTERNATIONAL LOGIC
-                let ad = document.getElementById('f-act-adult').value || "0";
-                let inf = (document.getElementById('f-act-infant').value || "0").padStart(2, '0');
-                let actLoad = `${ad}+${inf}`;
-
-                let car = document.getElementById('f-car').value;
-                let bus = document.getElementById('f-bus').value;
-                let vehicle = [];
-                if(car) vehicle.push('C-' + car);
-                if(bus) vehicle.push('B-' + bus);
-                let vehicleStr = vehicle.join(', ') || 'NIL';
-
-                let atdRaw = document.getElementById('f-atd').value;
-                let intlStatusFinal = "";
-                
+                let atdRaw = document.getElementById('f-atd').value; let intlStatusFinal = "";
                 if (atdRaw) {
-                    let stdMins = parseInt(stdRaw.substring(0,2)) * 60 + parseInt(stdRaw.substring(2,4));
-                    let atdMins = parseInt(atdRaw.substring(0,2)) * 60 + parseInt(atdRaw.substring(2,4));
-                    let diff = atdMins - stdMins;
-                    if(diff < -720) diff += 1440;
-                    
-                    if(diff === 0) intlStatusFinal = "FLIGHT ONTIME";
-                    else if(diff < 0) intlStatusFinal = `FLIGHT ${Math.abs(diff)} MINS EARLY`;
-                    else intlStatusFinal = `FLIGHT ${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
+                    let stdMins = parseInt(stdRaw.substring(0,2)) * 60 + parseInt(stdRaw.substring(2,4)); let atdMins = parseInt(atdRaw.substring(0,2)) * 60 + parseInt(atdRaw.substring(2,4));
+                    let diff = atdMins - stdMins; if(diff < -720) diff += 1440;
+                    if(diff === 0) intlStatusFinal = "FLIGHT ONTIME"; else if(diff < 0) intlStatusFinal = `FLIGHT ${Math.abs(diff)} MINS EARLY`; else intlStatusFinal = `FLIGHT ${diff} MINS DELAY DUE TO ${document.getElementById('f-delay-reason').value.toUpperCase()}`;
                 }
-
-                newFlight = {
-                    fno: fnoFinal,
-                    sector: document.getElementById('f-sector').value.toUpperCase(),
-                    acreg: document.getElementById('f-acreg').value.toUpperCase(),
-                    std: stdRaw + ' LT',
-                    atd: atdRaw ? atdRaw + ' LT' : '',
-                    capt: document.getElementById('f-capt').value.toUpperCase(),
-                    crew: document.getElementById('f-crew').value,
-                    book: document.getElementById('f-bookload').value,
-                    actual: actLoad,
-                    gatens: formatNil(document.getElementById('f-ns').value),
-                    immi: formatNil(document.getElementById('f-immi').value),
-                    selfoff: formatNil(document.getElementById('f-selfoff').value),
-                    mail: formatNil(document.getElementById('f-mail').value),
-                    cargo: formatNil(document.getElementById('f-cargo').value),
-                    gateno: document.getElementById('f-gateno').value.toUpperCase(),
-                    loadc: document.getElementById('f-loadctrl').value.toUpperCase(),
-                    ramp: document.getElementById('f-ramp').value.toUpperCase(),
-                    maas: formatNil(document.getElementById('f-maas').value),
-                    wchr: formatNil(document.getElementById('f-wchr').value),
-                    conpax: formatNil(document.getElementById('f-conpax').value),
-                    gdmant: 'SEND',
-                    obs: formatNil(document.getElementById('f-obs').value),
-                    foc: formatNil(document.getElementById('f-foc').value),
-                    fids: 'DONE',
-                    vehicle: vehicleStr,
-                    status: intlStatusFinal
-                };
+                newFlight = { fno: fnoFinal, sector: document.getElementById('f-sector').value.toUpperCase(), acreg: document.getElementById('f-acreg').value.toUpperCase(), std: stdRaw + ' LT', atd: atdRaw ? atdRaw + ' LT' : '', capt: document.getElementById('f-capt').value.toUpperCase(), crew: document.getElementById('f-crew').value, book: document.getElementById('f-bookload').value, actual: `${document.getElementById('f-act-adult').value || "0"}+${(document.getElementById('f-act-infant').value || "0").padStart(2, '0')}`, gatens: formatNil(document.getElementById('f-ns').value), immi: formatNil(document.getElementById('f-immi').value), selfoff: formatNil(document.getElementById('f-selfoff').value), mail: formatNil(document.getElementById('f-mail').value), cargo: formatNil(document.getElementById('f-cargo').value), gateno: document.getElementById('f-gateno').value.toUpperCase(), loadc: document.getElementById('f-loadctrl').value.toUpperCase(), ramp: document.getElementById('f-ramp').value.toUpperCase(), maas: formatNil(document.getElementById('f-maas').value), wchr: formatNil(document.getElementById('f-wchr').value), conpax: formatNil(document.getElementById('f-conpax').value), gdmant: 'SEND', obs: formatNil(document.getElementById('f-obs').value), foc: formatNil(document.getElementById('f-foc').value), fids: 'DONE', vehicle: (document.getElementById('f-car').value ? 'C-'+document.getElementById('f-car').value : '') + (document.getElementById('f-bus').value ? ', B-'+document.getElementById('f-bus').value : '') || 'NIL', status: intlStatusFinal };
             }
-
-            if(editingIndex > -1) {
-                appData.flights[editingIndex] = newFlight; 
-                editingIndex = -1;
-                document.getElementById('submit-btn').innerText = "ADD FLIGHT";
-            } else {
-                appData.flights.push(newFlight); 
-            }
-
-            saveData();
-            renderTable();
-            
-            document.getElementById('flight-form').reset();
-            document.getElementById('status-display').innerText = "Awaiting 4-Digit Time Input...";
-            document.getElementById('delay-box').style.display = "none";
-            document.getElementById('f-no').focus();
-            toggleGateTypeLogic(); 
+            if(editingIndex > -1) { appData.flights[editingIndex] = newFlight; editingIndex = -1; document.getElementById('submit-btn').innerText = "ADD FLIGHT"; } else { appData.flights.push(newFlight); }
+            saveData(); renderTable(); document.getElementById('flight-form').reset(); document.getElementById('f-no').focus(); toggleGateTypeLogic(); 
         });
 
-        // --- Render, Edit, Delete ---
         function renderTable() {
-            let tbody = document.getElementById('flights-tbody');
-            tbody.innerHTML = '';
-            let isDom = appData.global.type === 'DOMESTIC';
-
-            appData.flights.forEach((fl, index) => {
-                let timeColumn = isDom ? (fl.bend || '-') : (fl.atd || '-');
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${fl.fno}</strong></td>
-                        <td>${fl.sector}</td>
-                        <td>${fl.std}</td>
-                        <td>${timeColumn}</td>
-                        <td>${fl.status || '-'}</td>
-                        <td class="action-btns">
-                            <button type="button" class="btn-edit" onclick="editFlight(${index})">Edit</button>
-                            <button type="button" class="btn-del" onclick="deleteFlight(${index})">Del</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            let tbody = document.getElementById('flights-tbody'); tbody.innerHTML = ''; let isDom = appData.global.type === 'DOMESTIC';
+            appData.flights.forEach((fl, index) => { tbody.innerHTML += `<tr><td><strong>${fl.fno}</strong></td><td>${fl.sector}</td><td>${fl.std}</td><td>${isDom?fl.bend:fl.atd}</td><td>${fl.status||'-'}</td><td class="action-btns"><button type="button" class="btn-edit" onclick="editFlight(${index})">Edit</button><button type="button" class="btn-del" onclick="deleteFlight(${index})">Del</button></td></tr>`; });
         }
 
-        // --- BULLETPROOF EDIT FUNCTION ---
         function editFlight(index) {
-            // Force button text change & state update immediately
-            document.getElementById('submit-btn').innerText = "MODIFY";
-            editingIndex = index;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submit-btn').innerText = "MODIFY"; editingIndex = index; window.scrollTo({ top: 0, behavior: 'smooth' });
+            let fl = appData.flights[index]; document.getElementById('f-no').value = fl.fno.replace('BS-', ''); document.getElementById('f-sector').value = fl.sector; document.getElementById('f-acreg').value = fl.acreg; document.getElementById('f-std').value = fl.std.replace(' LT', ''); 
+            if (appData.global.type === 'DOMESTIC') { document.getElementById('dom-bstart').value = fl.bstart.replace(' LT', ''); document.getElementById('dom-bend').value = fl.bend.replace(' LT', ''); document.getElementById('dom-status').value = fl.domStatusType; handleDomStatusChange(); } 
+            else { document.getElementById('f-atd').value = (fl.atd||'').replace(' LT', ''); document.getElementById('f-capt').value = fl.capt; document.getElementById('f-crew').value = fl.crew; document.getElementById('f-bookload').value = fl.book; calculateStatus(); }
+        }
+        function deleteFlight(index) { if(confirm("Delete flight?")) { appData.flights.splice(index, 1); saveData(); renderTable(); } }
 
-            try {
-                let fl = appData.flights[index] || {};
-                let isDom = appData.global.type === 'DOMESTIC';
-
-                const safeStr = (val) => (val !== null && val !== undefined) ? String(val) : '';
-                const cleanNil = (val) => {
-                    let str = safeStr(val).trim();
-                    if (str === '' || str === 'NIL' || str.toLowerCase() === 'undefined' || str.toLowerCase() === 'null') {
-                        return '';
-                    }
-                    return str;
-                };
-
-                document.getElementById('f-no').value = safeStr(fl.fno).replace('BS-', '');
-                document.getElementById('f-sector').value = safeStr(fl.sector);
-                document.getElementById('f-acreg').value = safeStr(fl.acreg);
-                document.getElementById('f-std').value = safeStr(fl.std).replace(' LT', ''); 
-
-                if (isDom) {
-                    document.getElementById('dom-bstart').value = cleanNil(fl.bstart).replace(' LT', '');
-                    document.getElementById('dom-bend').value = cleanNil(fl.bend).replace(' LT', '');
-                    
-                    if (fl.domStatusType) {
-                        document.getElementById('dom-status').value = fl.domStatusType;
-                        if (fl.domStatusType === 'EARLY') {
-                            let match = safeStr(fl.status).match(/\d+/);
-                            document.getElementById('dom-early-mins').value = match ? match[0] : '';
-                        } else if (fl.domStatusType === 'DELAY') {
-                            let match = safeStr(fl.status).match(/\d+/);
-                            document.getElementById('dom-delay-mins').value = match ? match[0] : '';
-                            let reasonPart = safeStr(fl.status).split('DUE TO ')[1];
-                            document.getElementById('dom-delay-reason').value = reasonPart ? reasonPart : '';
-                        }
-                    }
-                    handleDomStatusChange();
-                } else {
-                    document.getElementById('f-atd').value = cleanNil(fl.atd).replace(' LT', ''); 
-                    document.getElementById('f-gateno').value = cleanNil(fl.gateno);
-                    document.getElementById('f-capt').value = safeStr(fl.capt);
-                    document.getElementById('f-crew').value = safeStr(fl.crew);
-                    document.getElementById('f-bookload').value = safeStr(fl.book);
-                    
-                    let loadParts = safeStr(fl.actual).split('+');
-                    document.getElementById('f-act-adult').value = loadParts[0] || '';
-                    document.getElementById('f-act-infant').value = loadParts[1] || '';
-                    
-                    document.getElementById('f-ns').value = cleanNil(fl.gatens);
-                    document.getElementById('f-immi').value = cleanNil(fl.immi);
-                    document.getElementById('f-selfoff').value = cleanNil(fl.selfoff);
-                    document.getElementById('f-mail').value = cleanNil(fl.mail);
-                    document.getElementById('f-cargo').value = cleanNil(fl.cargo);
-                    document.getElementById('f-loadctrl').value = cleanNil(fl.loadc);
-                    document.getElementById('f-ramp').value = cleanNil(fl.ramp);
-                    document.getElementById('f-maas').value = cleanNil(fl.maas);
-                    document.getElementById('f-wchr').value = cleanNil(fl.wchr);
-                    document.getElementById('f-conpax').value = cleanNil(fl.conpax);
-                    document.getElementById('f-obs').value = cleanNil(fl.obs);
-                    document.getElementById('f-foc').value = cleanNil(fl.foc);
-                    
-                    document.getElementById('f-car').value = '';
-                    document.getElementById('f-bus').value = '';
-                    let vStr = safeStr(fl.vehicle);
-                    if(vStr && vStr !== 'NIL' && vStr.toLowerCase() !== 'undefined') {
-                        let vParts = vStr.split(', ');
-                        vParts.forEach(p => {
-                            if(p.startsWith('C-')) document.getElementById('f-car').value = p.substring(2);
-                            if(p.startsWith('B-')) document.getElementById('f-bus').value = p.substring(2);
-                        });
-                    }
-
-                    if(safeStr(fl.status).includes('DELAY DUE TO')) {
-                        document.getElementById('f-delay-reason').value = safeStr(fl.status).split('DUE TO ')[1] || '';
-                    } else {
-                        document.getElementById('f-delay-reason').value = '';
-                    }
-
-                    calculateStatus();
-                }
-            } catch (err) {
-                console.error("Safely caught parsing error during edit:", err);
-            }
+        function shareData() {
+            saveData(); const dataStr = JSON.stringify(appData); const fileName = `USBA_Data_${appData.global.date || 'Export'}.usba`; const blob = new Blob([dataStr], { type: 'application/json' }); const file = new File([blob], fileName, { type: 'application/json' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'USBA Data' }).catch(() => downloadDataFallback(blob, fileName)); } 
+            else { downloadDataFallback(blob, fileName); }
+        }
+        function downloadDataFallback(blob, fileName) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); alert("Downloaded. Share it manually."); }
+        function receiveData() { document.getElementById('import-file').click(); }
+        function handleImport(e) {
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = (ev) => { try { const imported = JSON.parse(ev.target.result); if (confirm("Overwrite current data?")) { appData = imported; localStorage.setItem('usba_app_data', JSON.stringify(appData)); location.reload(); } } catch (err) { alert("Invalid file."); } }; reader.readAsText(file);
         }
 
-        function deleteFlight(index) {
-            if(confirm("Delete this flight?")) {
-                appData.flights.splice(index, 1);
-                if(editingIndex === index) { 
-                    document.getElementById('flight-form').reset();
-                    editingIndex = -1;
-                    document.getElementById('submit-btn').innerText = "ADD FLIGHT";
-                    toggleGateTypeLogic();
-                }
-                saveData();
-                renderTable();
-            }
-        }
-
-        // --- Final Report (JPG DIRECT DOWNLOAD) ---
         function generateFinalReport() {
-            saveData(); 
-            
-            let btn = document.querySelector('.btn-report');
-            let originalText = btn.innerText;
-            btn.innerText = "GENERATING JPG...";
-            btn.disabled = true;
+            saveData(); let btn = document.querySelector('.btn-report'); let originalText = btn.innerText; btn.innerText = "GENERATING..."; btn.disabled = true;
+            let formattedID = appData.user.id.toUpperCase(); if(!formattedID.startsWith('USBA-')) formattedID = 'USBA-' + formattedID.replace('USBA', '');
+            let reportDateStr = formatReportDate(appData.global.date); let isDom = appData.global.type === 'DOMESTIC'; let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
+            let dmHTML = appData.global.dutymanager ? `<div style="display: inline-block; background-color: #0033a0; color: #ffffff; padding: 8px 35px; border-radius: 50px; font-size: 24px; font-weight: 900; margin-top: 10px; margin-bottom: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); border: 2px solid #ffffff; letter-spacing: 1px;">DUTY MANAGER : ${appData.global.dutymanager.toUpperCase()}</div>` : '';
 
-            let formattedID = appData.user.id.toUpperCase();
-            if(!formattedID.startsWith('USBA-')) formattedID = 'USBA-' + formattedID.replace('USBA', '');
-            
-            let reportDateStr = formatReportDate(appData.global.date);
-
-            let isDom = appData.global.type === 'DOMESTIC';
-            let isInitial = !isDom && appData.flights.some(fl => !fl.atd || fl.atd.trim() === '');
-            let initialSpan = isInitial ? ` <span style="color: red;">INITIAL</span>` : '';
-            
-            let dmStr = appData.global.dutymanager ? appData.global.dutymanager.toUpperCase() : '';
-            let dmHTML = dmStr ? `<div style="display: inline-block; background-color: #0033a0; color: #ffffff; padding: 8px 35px; border-radius: 50px; font-size: 24px; font-weight: 900; margin-top: 10px; margin-bottom: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); border: 2px solid #ffffff; letter-spacing: 1px; text-transform: uppercase;">DUTY MANAGER : ${dmStr}</div>` : '';
-
-            let reportDiv = document.createElement('div');
-            reportDiv.id = 'report-export-container';
-            reportDiv.style.position = 'absolute';
-            reportDiv.style.top = '-9999px'; 
-            reportDiv.style.left = '0';
-            
-            // Standard Landscape Width for Domestic matching Attachment 1
-            reportDiv.style.width = isDom ? '1400px' : '1123px'; 
-            reportDiv.style.minHeight = isDom ? 'auto' : '794px'; 
-            
-            reportDiv.style.backgroundColor = '#e0f2fe'; 
-            reportDiv.style.padding = '30px';
-            reportDiv.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-            reportDiv.style.color = '#333';
-
+            let reportDiv = document.createElement('div'); reportDiv.style.position = 'absolute'; reportDiv.style.top = '-9999px'; reportDiv.style.left = '0'; reportDiv.style.width = isDom ? '1400px' : '1123px'; reportDiv.style.backgroundColor = '#e0f2fe'; reportDiv.style.padding = '30px';
             let htmlStr = `
                 <style>
-                    .export-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; border: 2px solid #002244; font-weight: bold; font-size: 18px; background: white; }
-                    .export-tbl td, .export-tbl th { border: 1px solid #002244; padding: 10px; }
-                    .airline-title { font-family: 'Arial Black', Impact, sans-serif; font-style: italic; color: #0033a0; font-size: 38px; letter-spacing: 1.5px; margin: 5px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 24px; }
-                    
-                    .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; font-size: 16px; background: white; }
-                    .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 8px; text-align: center; word-wrap: break-word; }
-                    .row-header { background-color: #b3d4ff; text-align: left; width: 140px; font-weight: bold; }
-                    
-                    .flight-row th, .flight-row td { background-color: #b3d4ff; font-weight: bold; color: var(--primary); }
-                    .status-td { text-align: center !important; vertical-align: middle; padding: 15px 5px !important; line-height: 1.3; font-weight: bold; font-size: 14px; }
-                    
+                    .export-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 2px solid #002244; background: white; }
+                    .export-tbl td { border: 1px solid #002244; padding: 10px; text-align: center; vertical-align: middle; }
+                    .airline-title { font-family: 'Arial Black', sans-serif; font-style: italic; color: #0033a0; font-size: 38px; margin: 5px 0; text-align: center; display: block; }
+                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 24px; text-align: center; display: block; }
+                    .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; font-size: 16px; background: white; font-weight: bold; }
+                    .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 8px; text-align: center; }
+                    .row-header { background-color: #b3d4ff; text-align: left !important; width: 140px; }
                     .bg-header-blue { background-color: #b3d4ff !important; }
-                    .bg-light-yellow { background-color: #fff9c4 !important; }
-                    
-                    /* FIXED COLORS AS PER REQUEST */
-                    .status-delay { background-color: #ff0000 !important; color: #ffffff !important; } 
-                    
-                    /* UPDATED STATUS COLORS */
-                    .st-blue { background-color: #007bff !important; color: #ffffff !important; } /* Blue for Early */
-                    .st-sky { background-color: #87ceeb !important; color: #000000 !important; } /* Sky Blue for Ontime */
-                    
-                    .dom-table { font-size: 19px; } 
-                    .dom-table th { background-color: #ffffff; color: #000; font-weight: 900; text-align: center; border: 1px solid #000; padding: 12px 5px; }
-                    .dom-table td { font-weight: bold; border: 1px solid #000; color: #000; padding: 10px 5px; }
-                    
-                    /* REDUCED OTHER COLUMNS TO MAXIMIZE STATUS COLUMN */
-                    .col-sl { width: 4%; }
-                    .col-flight { width: 8%; }
-                    .col-dest { width: 6%; }
-                    .col-acreg { width: 7%; }
-                    .col-std { width: 8%; }
-                    .col-bstart { width: 11%; }
-                    .col-bend { width: 11%; }
-                    .col-status { width: 45%; text-align: left !important; padding-left: 15px !important; text-transform: uppercase; }
-                    
-                    .intl-table td { font-weight: bold; }
+                    .bg-light-yellow { background-color: #fff9c4 !important; font-weight: 900 !important; }
+                    .status-delay { background-color: #ff0000 !important; color: #ffffff !important; }
+                    .st-blue { background-color: #007bff !important; color: #ffffff !important; }
+                    .st-sky { background-color: #87ceeb !important; color: #000000 !important; }
+                    .col-sl { width: 4%; } .col-flight { width: 8%; } .col-dest { width: 6%; } .col-acreg { width: 7%; } .col-std { width: 8%; } .col-bstart { width: 11%; } .col-bend { width: 11%; } .col-status { width: 45%; text-align: left !important; padding-left: 15px !important; }
                 </style>
-                
                 <table class="export-tbl">
-                    <tr>
-                        <td colspan="2" class="bg-header-blue" style="text-align: center; vertical-align: middle;">
-                            <h2 class="airline-title">US-BANGLA AIRLINES</h2>
-                            <h3>${appData.global.type} GATE CHECKLIST (${appData.global.session})${initialSpan}</h3>
-                            ${dmHTML}
-                        </td>
-                    </tr>
-                    <tr class="bg-light-yellow">
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">DATE : ${reportDateStr}</td>
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">SUPERVISOR: ${appData.global.supervisor.toUpperCase()}</td>
-                    </tr>
-                    <tr class="bg-light-yellow">
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">PREPARED BY : ${appData.user.name.toUpperCase()} // ${formattedID}</td>
-                        <td style="width: 50%; text-align: left; padding-left: 15px;">STAFF: ${appData.global.staff.toUpperCase()}</td>
-                    </tr>
+                    <tr><td colspan="2" class="bg-header-blue"><span class="airline-title">US-BANGLA AIRLINES</span><h3>${appData.global.type} GATE CHECKLIST (${appData.global.session})${isInitial?' <span style="color:red">INITIAL</span>':''}</h3>${dmHTML}</td></tr>
+                    <tr class="bg-light-yellow"><td style="text-align: left; width: 50%;">DATE : ${reportDateStr}</td><td style="text-align: left; width: 50%;">SUPERVISOR: ${appData.global.supervisor.toUpperCase()}</td></tr>
+                    <tr class="bg-light-yellow"><td style="text-align: left;">PREPARED BY : ${appData.user.name.toUpperCase()} // ${formattedID}</td><td style="text-align: left;">STAFF: ${appData.global.staff.toUpperCase()}</td></tr>
                 </table>`;
 
             if (isDom) {
-                htmlStr += `
-                <table class="data-tbl dom-table">
-                    <thead>
-                        <tr>
-                            <th class="col-sl">S/L NO</th>
-                            <th class="col-flight">FLIGHT NO</th>
-                            <th class="col-dest">DEST</th>
-                            <th class="col-acreg">A/C REG</th>
-                            <th class="col-std">STD</th>
-                            <th class="col-bstart">BOARDING START</th>
-                            <th class="col-bend">BOARDING END</th>
-                            <th class="col-status" style="text-align: center !important;">STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                
+                htmlStr += `<table class="data-tbl"><thead><tr><th class="col-sl">S/L</th><th class="col-flight">FLIGHT</th><th class="col-dest">DEST</th><th class="col-acreg">A/C REG</th><th class="col-std">STD</th><th class="col-bstart">BOARDING START</th><th class="col-bend">BOARDING END</th><th class="col-status">STATUS</th></tr></thead><tbody>`;
                 appData.flights.forEach((fl, i) => {
-                    let slNo = String(i + 1).padStart(2, '0');
-                    let statusBgClass = '';
-                    let statusUpper = (fl.status || '').toUpperCase();
-                    
-                    if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'st-blue';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'st-sky';
-
-                    htmlStr += `
-                        <tr>
-                            <td>${slNo}</td>
-                            <td>${fl.fno}</td>
-                            <td>${fl.sector}</td>
-                            <td>${fl.acreg || ''}</td>
-                            <td>${fl.std}</td>
-                            <td>${fl.bstart || ''}</td>
-                            <td>${fl.bend || ''}</td>
-                            <td class="${statusBgClass} col-status">${fl.status || ''}</td>
-                        </tr>
-                    `;
+                    let sC = ''; let sU = fl.status.toUpperCase(); if(sU.includes('DELAY')) sC='status-delay'; else if(sU.includes('EARLY')) sC='st-blue'; else sC='st-sky';
+                    htmlStr += `<tr><td>${String(i+1).padStart(2,'0')}</td><td>${fl.fno}</td><td>${fl.sector}</td><td>${fl.acreg}</td><td>${fl.std}</td><td>${fl.bstart}</td><td>${fl.bend}</td><td class="${sC} col-status">${fl.status}</td></tr>`;
                 });
                 htmlStr += `</tbody></table>`;
-
             } else {
-                htmlStr += `<table class="data-tbl intl-table"><tbody>`;
-                let rows = [
-                    { title: 'FLIGHT', key: 'fno' }, { title: 'SECTOR', key: 'sector' }, { title: 'A/C REG', key: 'acreg' },
-                    { title: 'STD', key: 'std' }, { title: 'ATD', key: 'atd' },
-                    { title: 'CAPT', key: 'capt' }, { title: 'CREW CONFIG', key: 'crew' }, 
-                    { title: 'BOOK LOAD', key: 'book' }, { title: 'ACTUAL LOAD', key: 'actual' },
-                    { title: 'GATE NS', key: 'gatens' }, { title: 'IMM OFF', key: 'immi' },
-                    { title: 'SELF OFF', key: 'selfoff' }, { title: 'MAIL', key: 'mail' }, { title: 'CARGO', key: 'cargo' },
-                    { title: 'GATE NO', key: 'gateno' }, { title: 'LOAD CONTROL', key: 'loadc' }, { title: 'RAMP OFFICER', key: 'ramp' }, 
-                    { title: 'MAAS', key: 'maas' }, { title: 'WCHR/WCHC', key: 'wchr' }, { title: 'CON PAX/BAG', key: 'conpax' }
-                ];
-
-                if (!isInitial) rows.push({ title: 'GD/MANT', key: 'gdmant' });
-                rows.push({ title: 'OBS', key: 'obs' }, { title: 'FOC', key: 'foc' });
-                if (!isInitial) rows.push({ title: 'FIDS', key: 'fids' });
-                rows.push({ title: 'VEHICLE', key: 'vehicle' });
-
-                let defaultNilKeys = ['gatens', 'immi', 'selfoff', 'mail', 'cargo', 'maas', 'wchr', 'conpax', 'obs', 'foc'];
-
-                rows.forEach(r => {
-                    let trClass = r.key === 'fno' ? 'class="flight-row"' : '';
-                    htmlStr += `<tr ${trClass}><th class="row-header">${r.title}</th>`;
-                    appData.flights.forEach(fl => { 
-                        let val = fl[r.key];
-                        let displayVal = val;
-                        
-                        if (isInitial) {
-                            if (displayVal === undefined || displayVal === null || String(displayVal).toLowerCase() === 'undefined' || String(displayVal).trim() === '' || String(displayVal).toUpperCase() === 'NIL') {
-                                displayVal = '';
-                            }
-                        } else {
-                            if ((val === undefined || val === '' || String(val).toLowerCase() === 'undefined') && defaultNilKeys.includes(r.key)) {
-                                displayVal = 'NIL';
-                            } else if (String(val).toLowerCase() === 'undefined') {
-                                displayVal = '';
-                            }
-                        }
-                        htmlStr += `<td>${displayVal || ''}</td>`; 
-                    });
-                    htmlStr += `</tr>`;
-                });
-
-                htmlStr += `<tr><th class="row-header">STATUS</th>`;
-                appData.flights.forEach(fl => { 
-                    let statusBgClass = '';
-                    let statusUpper = (fl.status || '').toUpperCase();
-                    
-                    if (statusUpper.includes('DELAY')) statusBgClass = 'status-delay';
-                    else if (statusUpper.includes('EARLY')) statusBgClass = 'st-blue';
-                    else if (statusUpper.includes('ONTIME') || statusUpper.includes('ON TIME')) statusBgClass = 'st-sky';
-
-                    htmlStr += `<td class="status-td ${statusBgClass}">${fl.status || ''}</td>`; 
-                });
-                htmlStr += `</tr></tbody></table>`;
+                htmlStr += `<table class="data-tbl"><tbody>`;
+                let rows = [{t:'FLIGHT',k:'fno'},{t:'SECTOR',k:'sector'},{t:'A/C REG',k:'acreg'},{t:'STD',k:'std'},{t:'ATD',k:'atd'},{t:'CAPT',k:'capt'},{t:'CREW',k:'crew'},{t:'BOOK',k:'book'},{t:'ACTUAL',k:'actual'},{t:'GATE NS',k:'gatens'},{t:'IMM OFF',k:'immi'},{t:'SELF OFF',k:'selfoff'},{t:'MAIL',k:'mail'},{t:'CARGO',k:'cargo'},{t:'GATE NO',k:'gateno'},{t:'LOAD CTRL',k:'loadc'},{t:'RAMP',k:'ramp'},{t:'MAAS',k:'maas'},{t:'WCHR/C',k:'wchr'},{t:'CON PAX',k:'conpax'},{t:'GD/MANT',k:'gdmant',c:true},{t:'OBS',k:'obs'},{t:'FOC',k:'foc'},{t:'FIDS',k:'fids',c:true},{t:'VEHICLE',k:'vehicle'}];
+                rows.forEach(r => { if(r.c && isInitial) return; htmlStr += `<tr><th class="row-header">${r.t}</th>`; appData.flights.forEach(fl => { let dV = fl[r.k]; if(isInitial && (!dV || dV==='NIL')) dV = ''; htmlStr += `<td>${dV||''}</td>`; }); htmlStr += `</tr>`; });
+                htmlStr += `<tr><th class="row-header">STATUS</th>`; appData.flights.forEach(fl => { let sC = ''; let sU = (fl.status||'').toUpperCase(); if(sU.includes('DELAY')) sC='status-delay'; else if(sU.includes('EARLY')) sC='st-blue'; else sC='st-sky'; htmlStr += `<td class="${sC}">${fl.status}</td>`; }); htmlStr += `</tr></tbody></table>`;
             }
-
-            reportDiv.innerHTML = htmlStr;
-            document.body.appendChild(reportDiv);
-
-            html2canvas(reportDiv, { 
-                scale: 2, 
-                backgroundColor: '#e0f2fe' 
-            }).then(canvas => {
-                let imgData = canvas.toDataURL('image/jpeg', 0.95);
-                let link = document.createElement('a');
-                link.download = `USBA_${appData.global.type}_Checklist_${appData.global.date || 'Report'}.jpg`;
-                link.href = imgData;
-                link.click();
-
-                document.body.removeChild(reportDiv);
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }).catch(err => {
-                console.error("Error generating JPG:", err);
-                alert("Error generating JPG image.");
-                document.body.removeChild(reportDiv);
-                btn.innerText = originalText;
-                btn.disabled = false;
+            reportDiv.innerHTML = htmlStr; document.body.appendChild(reportDiv);
+            html2canvas(reportDiv, { scale: 2, backgroundColor: '#e0f2fe' }).then(canvas => {
+                let link = document.createElement('a'); link.download = `USBA_${appData.global.type}_Report.jpg`; link.href = canvas.toDataURL('image/jpeg', 0.95); link.click();
+                document.body.removeChild(reportDiv); btn.innerText = originalText; btn.disabled = false;
             });
         }
     </script>
