@@ -84,6 +84,7 @@
         .btn-report { background-color: #28a745; }
         .btn-report:hover { background-color: #218838; }
 
+        /* Custom buttons for sharing */
         .btn-share { background-color: #f39c12 !important; }
         .btn-share:hover { background-color: #e67e22 !important; }
         .btn-receive { background-color: #8e44ad !important; }
@@ -297,8 +298,10 @@
         }
         function formatNil(val) { return (!val || val === '0') ? 'NIL' : val; }
         function formatReportDate(dStr) {
-            let today = dStr ? new Date(dStr) : new Date(); const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-            return `${String(today.getDate()).padStart(2, '0')} ${months[today.getMonth()]} ${today.getFullYear()}`;
+            if(!dStr) { let t = new Date(); dStr = t.toISOString().split('T')[0]; }
+            let parts = dStr.split('-');
+            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            return `${parts[2]} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
         }
 
         document.getElementById('flight-form').addEventListener('submit', (e) => {
@@ -338,14 +341,14 @@
 
         function shareData() {
             saveData(); const dataStr = JSON.stringify(appData); const fileName = `USBA_Data_${appData.global.date || 'Export'}.usba`; const blob = new Blob([dataStr], { type: 'application/json' }); const file = new File([blob], fileName, { type: 'application/json' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'USBA Data' }).catch(() => downloadDataFallback(blob, fileName)); } 
+            if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'USBA Data Share' }).catch(() => downloadDataFallback(blob, fileName)); } 
             else { downloadDataFallback(blob, fileName); }
         }
-        function downloadDataFallback(blob, fileName) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); alert("Downloaded. Share it manually."); }
+        function downloadDataFallback(blob, fileName) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); alert("File prepared. Share manually via WhatsApp."); }
         function receiveData() { document.getElementById('import-file').click(); }
         function handleImport(e) {
             const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = (ev) => { try { const imported = JSON.parse(ev.target.result); if (confirm("Overwrite current data?")) { appData = imported; localStorage.setItem('usba_app_data', JSON.stringify(appData)); location.reload(); } } catch (err) { alert("Invalid file."); } }; reader.readAsText(file);
+            reader.onload = (ev) => { try { const imported = JSON.parse(ev.target.result); if (confirm("Overwrite current dashboard with this data?")) { appData = imported; localStorage.setItem('usba_app_data', JSON.stringify(appData)); location.reload(); } } catch (err) { alert("Invalid file."); } }; reader.readAsText(file);
         }
 
         function generateFinalReport() {
@@ -359,16 +362,17 @@
                 <style>
                     .export-tbl { width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 2px solid #002244; background: white; }
                     .export-tbl td { border: 1px solid #002244; padding: 10px; text-align: center; vertical-align: middle; }
-                    .airline-title { font-family: 'Arial Black', sans-serif; font-style: italic; color: #0033a0; font-size: 38px; margin: 5px 0; text-align: center; display: block; }
-                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 24px; text-align: center; display: block; }
+                    .airline-title { font-family: 'Arial Black', sans-serif; font-style: italic; color: #0033a0; font-size: 38px; margin: 5px 0; text-align: center; display: block; width:100%; }
+                    .export-tbl h3 { margin: 2px 0; color: #0056b3; font-size: 24px; text-align: center; display: block; width:100%; }
                     .data-tbl { width: 100%; border-collapse: collapse; border: 2px solid #002244; table-layout: fixed; font-size: 16px; background: white; font-weight: bold; }
                     .data-tbl th, .data-tbl td { border: 1px solid #002244; padding: 8px; text-align: center; }
                     .row-header { background-color: #b3d4ff; text-align: left !important; width: 140px; }
-                    .bg-header-blue { background-color: #b3d4ff !important; }
-                    .bg-light-yellow { background-color: #fff9c4 !important; font-weight: 900 !important; }
+                    .bg-header-blue { background-color: #b3d4ff !important; text-align:center !important; }
+                    .bg-light-yellow { background-color: #fff9c4 !important; font-weight: 900 !important; font-size: 19px !important; }
                     .status-delay { background-color: #ff0000 !important; color: #ffffff !important; }
                     .st-blue { background-color: #007bff !important; color: #ffffff !important; }
                     .st-sky { background-color: #87ceeb !important; color: #000000 !important; }
+                    .imp-row { background-color: #87ceeb !important; font-weight: 900 !important; font-size: 18px; }
                     .col-sl { width: 4%; } .col-flight { width: 8%; } .col-dest { width: 6%; } .col-acreg { width: 7%; } .col-std { width: 8%; } .col-bstart { width: 11%; } .col-bend { width: 11%; } .col-status { width: 45%; text-align: left !important; padding-left: 15px !important; }
                 </style>
                 <table class="export-tbl">
@@ -378,7 +382,7 @@
                 </table>`;
 
             if (isDom) {
-                htmlStr += `<table class="data-tbl"><thead><tr><th class="col-sl">S/L</th><th class="col-flight">FLIGHT</th><th class="col-dest">DEST</th><th class="col-acreg">A/C REG</th><th class="col-std">STD</th><th class="col-bstart">BOARDING START</th><th class="col-bend">BOARDING END</th><th class="col-status">STATUS</th></tr></thead><tbody>`;
+                htmlStr += `<table class="data-tbl"><thead><tr style="background-color:#eee"><th>S/L</th><th>FLIGHT</th><th>DEST</th><th>A/C REG</th><th>STD</th><th>BOARDING START</th><th>BOARDING END</th><th style="width:45%">STATUS</th></tr></thead><tbody>`;
                 appData.flights.forEach((fl, i) => {
                     let sC = ''; let sU = fl.status.toUpperCase(); if(sU.includes('DELAY')) sC='status-delay'; else if(sU.includes('EARLY')) sC='st-blue'; else sC='st-sky';
                     htmlStr += `<tr><td>${String(i+1).padStart(2,'0')}</td><td>${fl.fno}</td><td>${fl.sector}</td><td>${fl.acreg}</td><td>${fl.std}</td><td>${fl.bstart}</td><td>${fl.bend}</td><td class="${sC} col-status">${fl.status}</td></tr>`;
@@ -387,7 +391,13 @@
             } else {
                 htmlStr += `<table class="data-tbl"><tbody>`;
                 let rows = [{t:'FLIGHT',k:'fno'},{t:'SECTOR',k:'sector'},{t:'A/C REG',k:'acreg'},{t:'STD',k:'std'},{t:'ATD',k:'atd'},{t:'CAPT',k:'capt'},{t:'CREW',k:'crew'},{t:'BOOK',k:'book'},{t:'ACTUAL',k:'actual'},{t:'GATE NS',k:'gatens'},{t:'IMM OFF',k:'immi'},{t:'SELF OFF',k:'selfoff'},{t:'MAIL',k:'mail'},{t:'CARGO',k:'cargo'},{t:'GATE NO',k:'gateno'},{t:'LOAD CTRL',k:'loadc'},{t:'RAMP',k:'ramp'},{t:'MAAS',k:'maas'},{t:'WCHR/C',k:'wchr'},{t:'CON PAX',k:'conpax'},{t:'GD/MANT',k:'gdmant',c:true},{t:'OBS',k:'obs'},{t:'FOC',k:'foc'},{t:'FIDS',k:'fids',c:true},{t:'VEHICLE',k:'vehicle'}];
-                rows.forEach(r => { if(r.c && isInitial) return; htmlStr += `<tr><th class="row-header">${r.t}</th>`; appData.flights.forEach(fl => { let dV = fl[r.k]; if(isInitial && (!dV || dV==='NIL')) dV = ''; htmlStr += `<td>${dV||''}</td>`; }); htmlStr += `</tr>`; });
+                rows.forEach(r => { 
+                    if(r.c && isInitial) return; 
+                    let isImp = (r.k === 'fno' || r.k === 'sector');
+                    htmlStr += `<tr class="${isImp ? 'imp-row' : ''}"><th class="row-header">${r.t}</th>`; 
+                    appData.flights.forEach(fl => { let dV = fl[r.k]; if(isInitial && (!dV || dV==='NIL')) dV = ''; htmlStr += `<td>${dV||''}</td>`; }); 
+                    htmlStr += `</tr>`; 
+                });
                 htmlStr += `<tr><th class="row-header">STATUS</th>`; appData.flights.forEach(fl => { let sC = ''; let sU = (fl.status||'').toUpperCase(); if(sU.includes('DELAY')) sC='status-delay'; else if(sU.includes('EARLY')) sC='st-blue'; else sC='st-sky'; htmlStr += `<td class="${sC}">${fl.status}</td>`; }); htmlStr += `</tr></tbody></table>`;
             }
             reportDiv.innerHTML = htmlStr; document.body.appendChild(reportDiv);
